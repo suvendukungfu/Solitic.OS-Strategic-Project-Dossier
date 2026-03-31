@@ -1,0 +1,11 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100" height="100" rx="8" fill="#1A1A1A"/>
+  <!-- X mark -->
+  <path d="M20 25 L45 50 L20 75" stroke="#C9A24D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Diagonal line with arrow -->
+  <path d="M50 30 L80 5" stroke="#C9A24D" stroke-width="6" stroke-linecap="round" fill="none"/>
+  <!-- Arrow head -->
+  <path d="M70 5 L82 5 L82 17" stroke="#C9A24D" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Circle (O) -->
+  <circle cx="60" cy="70" r="18" stroke="#C9A24D" stroke-width="6" fill="none"/>
+</svg>

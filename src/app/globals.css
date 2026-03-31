@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 215 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+    --primary: 42 52% 54%;
+    --primary-foreground: 215 25% 15%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 215 25% 15%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 215 60% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 30% 88%;
+    --input: 210 30% 88%;
+    --ring: 42 52% 54%;
+    --radius: 0.5rem;
+    --gold: 42 52% 54%;
+    --charcoal: 215 25% 10%;
+    --off-white: 0 0% 98%;
+  }
+
+  .dark {
+    --background: 215 25% 10%;
+    --foreground: 0 0% 98%;
+    --card: 215 25% 13%;
+    --card-foreground: 0 0% 98%;
+    --popover: 215 25% 13%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 42 52% 54%;
+    --primary-foreground: 215 25% 15%;
+    --secondary: 215 25% 18%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 215 25% 18%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 215 60% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 215 25% 22%;
+    --input: 215 25% 22%;
+    --ring: 42 52% 54%;
+    --gold: 42 52% 54%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+}
+
+/* Editorial Typography */
+.editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 2rem;
+}
+
+.newspaper-divider {
+  @apply border-t-4 border-foreground my-8;
+}
+
+/* Premium Prose (Medium/NYT Level) */
+.prose-editorial {
+  @apply max-w-none text-foreground/90;
+  font-family: var(--font-body);
+  line-height: 1.85;
+  letter-spacing: -0.003em;
+}
+
+.prose-editorial h1, 
+.prose-editorial h2, 
+.prose-editorial h3 {
+  font-family: var(--font-display);
+  @apply font-black tracking-tighter text-foreground mb-6;
+  line-height: 1.1;
+}
+
+.prose-editorial h2 { @apply text-4xl mt-16; }
+.prose-editorial h3 { @apply text-2xl mt-12; }
+
+.prose-editorial p {
+  @apply mb-8 text-[18px] md:text-[20px];
+}
+
+.prose-editorial blockquote {
+  @apply border-l-4 border-gold bg-gold/5 pl-8 py-4 my-12 italic text-2xl font-display font-bold text-foreground/80;
+}
+
+.prose-editorial img {
+  @apply w-full h-auto rounded-none my-12 border border-foreground/10 shadow-2xl;
+}
+
+.prose-editorial ul, .prose-editorial ol {
+  @apply my-8 pl-6 space-y-4 text-[18px];
+}
+
+.prose-editorial li::marker {
+  @apply text-gold font-bold;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 30s linear infinite;
+}
+
+.glass-morphism {
+  @apply bg-background/80 backdrop-blur-md border border-white/10;
+}
