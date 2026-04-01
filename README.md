@@ -64,17 +64,23 @@ The Portal is your consultancy's "Intelligence Hub", allowing for full control o
 ### **1. Environment Configuration**
 Ensure your `.env` file contains the required strategic keys:
 ```bash
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="file:./prisma/dev.db"
 NEXTAUTH_SECRET="your-high-security-secret"
+NEXTAUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 RESEND_API_KEY="re_xxxxxxxxxxxxxx"
+CONTACT_TO_EMAIL="contact@solitic.in"
 ```
 
 ### **2. Deployment & Execution**
 ```bash
 npm install        # Initialize global dependencies
 npx prisma generate # 📀 Build data models
+npm run db:push    # 🗃️ Sync the database schema
 npm run dev        # 🛰️ Launch Strategic Development Server
 ```
+
+For production Node hosting, the app now builds in standalone mode. Set `NEXTAUTH_URL` and `NEXT_PUBLIC_SITE_URL` to the final domain before `npm run build`.
 
 ### **3. Operational Diagnostics**
 Perform a heartbeat check on your communication pipeline:
