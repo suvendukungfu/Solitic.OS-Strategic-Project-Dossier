@@ -1,17 +1,31 @@
 import { prisma } from "@/lib/prisma";
 import { BlogListingUI } from "@/components/blog/BlogListingUI";
 import { Metadata } from "next";
+import { absoluteUrl, siteConfig } from "@/lib/site";
 
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "The Solitic | Legal Intelligence & Corporate Advisory",
-  description: "The authoritative voice for legal and business intelligence. Read our latest stories on compliance, corporate strategy, and regulatory shifts.",
+  title: "Insights & Editorial Intelligence",
+  description:
+    "Read the latest Solitic briefings on corporate strategy, compliance, contracts, and business advisory.",
+  alternates: {
+    canonical: '/blog',
+  },
   openGraph: {
-    title: "The Solitic | Legal Intelligence",
-    description: "The authoritative voice for legal and business intelligence.",
+    url: absoluteUrl('/blog'),
+    siteName: siteConfig.name,
+    title: "Solitic Insights & Editorial Intelligence",
+    description:
+      "Read the latest Solitic briefings on corporate strategy, compliance, contracts, and business advisory.",
     type: "website",
-  }
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Solitic Insights & Editorial Intelligence',
+    description:
+      "Read the latest Solitic briefings on corporate strategy, compliance, contracts, and business advisory.",
+  },
 };
 
 export default async function BlogListing() {

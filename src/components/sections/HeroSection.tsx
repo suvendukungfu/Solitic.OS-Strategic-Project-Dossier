@@ -159,7 +159,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1 }}
-            className="mt-20 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
+            className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 max-w-2xl mx-auto px-4"
           >
             {[
               { icon: Users, value: "10+", label: "Clients Served" },

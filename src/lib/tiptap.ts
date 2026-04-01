@@ -15,7 +15,15 @@ export function renderContent(json: any) {
   if (!json) return '';
   
   // Ensure we are working with a valid TipTap JSON object
-  const content = typeof json === 'string' ? JSON.parse(json) : json;
+  let content = json;
+  if (typeof json === 'string') {
+    try {
+      content = JSON.parse(json);
+    } catch (error) {
+      // If parsing fails, it might be raw HTML from legacy posts, so just return it
+      return json;
+    }
+  }
   
   return generateHTML(content, [
     StarterKit,

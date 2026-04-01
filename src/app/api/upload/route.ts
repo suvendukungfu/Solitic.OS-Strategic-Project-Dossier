@@ -21,8 +21,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "No file received" }, { status: 400 });
     }
 
+    // Advanced Institutional Constraint: 5MB Threshold
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json({ message: "Asset too large. Max 5MB authorized." }, { status: 400 });
+    }
+
     if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ message: "Must be an image" }, { status: 400 });
+      return NextResponse.json({ message: "Must be a valid institutional visual format (Image)" }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());

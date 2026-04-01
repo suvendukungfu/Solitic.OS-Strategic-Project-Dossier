@@ -45,7 +45,7 @@ export function ClientsSection() {
           </h2>
         </AnimatedSection>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {clients.map((client, index) => (
             <AnimatedSection key={index} delay={index * 0.15}>
               <div className="group h-full bg-card rounded-xl p-8 border border-border hover:border-gold/50 transition-all duration-500 hover:shadow-gold">

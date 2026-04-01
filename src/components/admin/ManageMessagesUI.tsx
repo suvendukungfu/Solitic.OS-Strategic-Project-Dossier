@@ -11,13 +11,21 @@ import {
   ChevronRight, 
   ExternalLink,
   Filter,
-  CheckCircle2,
-  AlertCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export interface ContactMessage {
   id: string;
@@ -39,6 +47,8 @@ export function ManageMessagesUI({ initialMessages }: ManageMessagesUIProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const filteredMessages = useMemo(() => {
     return messages.filter((msg) =>
@@ -54,26 +64,64 @@ export function ManageMessagesUI({ initialMessages }: ManageMessagesUIProps) {
     [messages, selectedMessageId]
   );
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this message? This action is irreversible.')) return;
+  // Request delete confirmation instead of deleting immediately
+  const requestDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPendingDeleteId(id);
+    setShowDeleteConfirm(true);
+  };
+
+  // Only execute delete after explicit confirmation
+  const executeDelete = async () => {
+    if (!pendingDeleteId) return;
     
-    setIsDeleting(id);
+    setShowDeleteConfirm(false);
+    setIsDeleting(pendingDeleteId);
     try {
-      const res = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/messages/${pendingDeleteId}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to delete');
       
-      setMessages((prev) => prev.filter((m) => m.id !== id));
-      if (selectedMessageId === id) setSelectedMessageId(null);
-      toast.success('Message deleted successfully');
+      setMessages((prev) => prev.filter((m) => m.id !== pendingDeleteId));
+      if (selectedMessageId === pendingDeleteId) setSelectedMessageId(null);
+      toast.success('Message archived successfully');
     } catch (err) {
       toast.error('Failed to delete message');
     } finally {
       setIsDeleting(null);
+      setPendingDeleteId(null);
     }
   };
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="bg-card border border-border rounded-[2rem] p-10">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-display font-black tracking-tight">
+              Delete this <span className="text-destructive italic">message?</span>
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground py-4 text-sm leading-relaxed">
+              This will permanently remove the message from your inbox. This action cannot be undone. Are you sure you want to proceed?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-4">
+            <AlertDialogCancel 
+              className="rounded-xl px-8"
+              onClick={() => setPendingDeleteId(null)}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={executeDelete}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-xl px-8 font-black uppercase tracking-widest text-[10px]"
+            >
+              Confirm Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
@@ -148,10 +196,7 @@ export function ManageMessagesUI({ initialMessages }: ManageMessagesUIProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(msg.id);
-                      }}
+                      onClick={(e) => requestDelete(msg.id, e)}
                       disabled={isDeleting === msg.id}
                       className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
                     >
@@ -243,10 +288,10 @@ export function ManageMessagesUI({ initialMessages }: ManageMessagesUIProps) {
                     </div>
                   </div>
 
-                  <div className="pt-6">
+                  <div className="pt-6 flex gap-3">
                     <Button
                       asChild
-                      className="w-full h-14 rounded-2xl bg-gold text-charcoal font-sans font-black text-sm tracking-tight shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all hover:-translate-y-1"
+                      className="flex-1 h-14 rounded-2xl bg-gold text-charcoal font-sans font-black text-sm tracking-tight shadow-lg shadow-gold/20 hover:shadow-gold/40 transition-all hover:-translate-y-1"
                     >
                       <a href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject}`}>
                         Construct Response

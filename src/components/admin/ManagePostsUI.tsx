@@ -7,10 +7,22 @@ import { Edit2, Eye, Trash2, CheckCircle, AlertCircle, Plus, Search, Filter, Lay
 import { toast } from 'sonner';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function ManagePostsUI({ initialPosts }: { initialPosts: Post[] }) {
   const [posts, setPosts] = useState(initialPosts);
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingDeleteType, setPendingDeleteType] = useState<{ type: 'SINGLE' | 'BULK', post?: Post }>({ type: 'SINGLE' });
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
@@ -48,25 +60,36 @@ export function ManagePostsUI({ initialPosts }: { initialPosts: Post[] }) {
     setSelectedIds(next);
   };
 
-  // Bulk Action Dispatcher
-  const bulkAction = async (action: 'DELETE' | 'PUBLISHED' | 'DRAFT') => {
-    if (action === 'DELETE') {
-      if (!confirm(`Are you sure you want to delete ${selectedIds.size} stories permanently?`)) return;
+  // Improved Delete Handler (Supports Single & Bulk)
+  const executeDelete = async () => {
+    setShowDeleteConfirm(false);
+    if (pendingDeleteType.type === 'BULK') {
+       await bulkAction('DELETE', true);
+    } else if (pendingDeleteType.post) {
+       await deletePostRaw(pendingDeleteType.post);
     }
-    setIsBulkActing(true);
+  };
+
+  // Bulk Action Dispatcher (Refined)
+  const bulkAction = async (action: 'DELETE' | 'PUBLISHED' | 'DRAFT', confirmed = false) => {
+    if (action === 'DELETE' && !confirmed) {
+      setPendingDeleteType({ type: 'BULK' });
+      setShowDeleteConfirm(true);
+      return;
+    }
     
+    setIsBulkActing(true);
     try {
       const targets = posts.filter(p => selectedIds.has(p.id));
-      
       const results = await Promise.all(targets.map(async post => {
         try {
           if (action === 'DELETE') {
-             const res = await fetch(`/api/posts/${post.slug}?id=${post.id}`, { method: 'DELETE' });
+             const res = await fetch(`/api/posts/byId/${post.id}`, { method: 'DELETE' });
              if (!res.ok) throw new Error();
           } else {
-             const res = await fetch(`/api/posts/${post.slug}`, {
-               method: 'PUT',
-               body: JSON.stringify({ ...post, status: action }),
+             const res = await fetch(`/api/posts/byId/${post.id}`, {
+               method: 'PATCH',
+               body: JSON.stringify({ status: action }),
                headers: { 'Content-Type': 'application/json' }
              });
              if (!res.ok) throw new Error();
@@ -92,10 +115,10 @@ export function ManagePostsUI({ initialPosts }: { initialPosts: Post[] }) {
       if (failedCount > 0) {
          toast.error(`${failedCount} operations failed, but ${successfulIds.size} succeeded.`);
       } else {
-         toast.success(`Successfully processed ${successfulIds.size} stories.`);
+         toast.success(`Success: ${successfulIds.size} manuscripts processed.`);
       }
     } catch (e) {
-      toast.error('Fatal bulk action error occurred.');
+      toast.error('Fatal synchronization error.');
     } finally {
       setIsBulkActing(false);
     }
@@ -106,30 +129,28 @@ export function ManagePostsUI({ initialPosts }: { initialPosts: Post[] }) {
     const newStatus = post.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
     setIsUpdating(post.id);
     try {
-      const resp = await fetch(`/api/posts/${post.slug}`, {
-        method: 'PUT',
-        body: JSON.stringify({ ...post, status: newStatus }),
+      const resp = await fetch(`/api/posts/byId/${post.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: newStatus }),
         headers: { 'Content-Type': 'application/json' }
       });
-      if (!resp.ok) throw new Error('Failed to update');
+      if (!resp.ok) throw new Error();
       
       setPosts(posts.map(p => p.id === post.id ? { ...p, status: newStatus } : p));
       router.refresh();
-      toast.success(`Story ${newStatus === 'PUBLISHED' ? 'published' : 'moved to drafts'}`);
+      toast.success(`Manuscript ${newStatus === 'PUBLISHED' ? 'is now live' : 'secured as draft'}`);
     } catch (e) {
-      toast.error('Failed to toggle status');
+      toast.error('Status transition failure');
     } finally {
       setIsUpdating(null);
     }
   };
 
-  const deletePost = async (post: Post) => {
-    if (!confirm('Are you sure you want to delete this story forever?')) return;
-    
+  const deletePostRaw = async (post: Post) => {
     setIsUpdating(post.id);
     try {
-      const resp = await fetch(`/api/posts/${post.slug}?id=${post.id}`, { method: 'DELETE' });
-      if (!resp.ok) throw new Error('Delete failed');
+      const resp = await fetch(`/api/posts/byId/${post.id}`, { method: 'DELETE' });
+      if (!resp.ok) throw new Error();
       
       setPosts(posts.filter(p => p.id !== post.id));
       setSelectedIds(prev => {
@@ -138,9 +159,9 @@ export function ManagePostsUI({ initialPosts }: { initialPosts: Post[] }) {
         return next;
       });
       router.refresh();
-      toast.success('Story deleted from catalogue');
+      toast.success('Manuscript retracted from registry');
     } catch (e) {
-      toast.error('Failed to delete story');
+      toast.error('Retraction failed');
     } finally {
       setIsUpdating(null);
     }
@@ -148,6 +169,29 @@ export function ManagePostsUI({ initialPosts }: { initialPosts: Post[] }) {
 
   return (
     <div className="flex flex-col gap-8 relative pb-24">
+      {/* Retraction Confirmation Modal */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="bg-[#1A1A1A] border border-white/5 text-white backdrop-blur-3xl rounded-[2rem] p-10">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-3xl font-display font-black italic tracking-tighter">Confirm <span className="text-red-500">Retraction.</span></AlertDialogTitle>
+            <AlertDialogDescription className="text-white/40 py-4 font-serif italic text-lg leading-relaxed">
+              {pendingDeleteType.type === 'BULK' 
+                ? `Are you certain you wish to purge ${selectedIds.size} manuscripts from the institutional registry? This action is permanent.`
+                : "Are you certain you wish to purge this manuscript from the institutional registry? This action is permanent."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-4">
+            <AlertDialogCancel className="bg-transparent border border-white/5 hover:bg-white/5 text-white/60 rounded-xl px-8">Abort</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={executeDelete}
+              className="bg-red-500 hover:bg-red-600 text-white rounded-xl px-8 font-black uppercase tracking-widest text-[10px]"
+            >
+              Confirm Purge
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Floating Bulk Action Bar */}
       {selectedIds.size > 0 && (
         <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
@@ -314,7 +358,10 @@ export function ManagePostsUI({ initialPosts }: { initialPosts: Post[] }) {
                           <div className="w-px h-4 bg-border/50 mx-1 hidden md:block"></div>
                           <button 
                             disabled={isUpdating === post.id}
-                            onClick={() => deletePost(post)}
+                            onClick={() => {
+                              setPendingDeleteType({ type: 'SINGLE', post });
+                              setShowDeleteConfirm(true);
+                            }}
                             className="p-2 rounded border border-transparent hover:border-red-500/30 hover:text-red-500 hover:bg-red-500/5 transition-all text-muted-foreground disabled:opacity-50 shadow-sm bg-transparent" title="Retract"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

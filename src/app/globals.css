@@ -106,11 +106,75 @@
 }
 
 .prose-editorial ul, .prose-editorial ol {
-  @apply my-8 pl-6 space-y-4 text-[18px];
+  @apply my-8 pl-8 space-y-3 text-[18px];
+}
+
+.prose-editorial ul {
+  list-style-type: disc;
+}
+
+.prose-editorial ol {
+  list-style-type: decimal;
+}
+
+.prose-editorial li {
+  @apply leading-relaxed;
+  padding-left: 0.25rem;
+}
+
+.prose-editorial li > ul,
+.prose-editorial li > ol {
+  @apply mt-3 mb-0;
+}
+
+.prose-editorial li > ul {
+  list-style-type: circle;
+}
+
+.prose-editorial li > ul > li > ul {
+  list-style-type: square;
 }
 
 .prose-editorial li::marker {
   @apply text-gold font-bold;
+}
+
+.prose-editorial li > p {
+  @apply mb-0;
+}
+
+/* ====== Editor (ProseMirror / Draft Studio) List Styles ====== */
+.ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.35rem;
+}
+
+.ProseMirror li > ul {
+  list-style-type: circle;
+}
+
+.ProseMirror li > ul > li > ul {
+  list-style-type: square;
+}
+
+.ProseMirror li > p {
+  margin-bottom: 0;
+}
+
+.ProseMirror li::marker {
+  color: #C2A46D;
+  font-weight: 700;
 }
 
 @keyframes ticker {

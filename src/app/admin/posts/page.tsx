@@ -16,7 +16,6 @@ export default async function ManagePosts() {
     status: post.status as PostStatus,
   }));
 
-  // Strict JSON serialization to remove any non-serializable Prisma methods
   const serializedPosts = JSON.parse(JSON.stringify(plainPosts));
 
   return <ManagePostsUI initialPosts={serializedPosts as Post[]} />;

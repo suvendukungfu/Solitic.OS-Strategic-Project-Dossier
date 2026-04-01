@@ -70,7 +70,7 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="font-display text-5xl md:text-6xl lg:text-8xl font-black text-foreground leading-[1.05] mb-8 tracking-tighter"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black text-foreground leading-[1.05] mb-8 tracking-tighter"
           >
             {post.title}
           </motion.h1>
@@ -82,8 +82,8 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
               transition={{ delay: 0.6 }}
               className="relative mb-12"
             >
-              <Quote className="absolute -left-12 -top-4 w-16 h-16 text-gold/5 rotate-180" />
-              <p className="font-display text-2xl md:text-3xl text-muted-foreground/80 leading-snug border-l-4 border-gold/40 pl-10 italic font-medium">
+              <Quote className="absolute -left-6 md:-left-12 -top-4 w-12 h-12 md:w-16 md:h-16 text-gold/5 rotate-180" />
+              <p className="font-display text-xl md:text-2xl lg:text-3xl text-muted-foreground/80 leading-snug border-l-4 border-gold/40 pl-6 md:pl-10 italic font-medium">
                 {post.excerpt}
               </p>
             </motion.div>
@@ -93,15 +93,15 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="flex flex-wrap items-center gap-10 py-8 border-t border-foreground/10 font-body text-[11px] uppercase tracking-[0.2em] text-muted-foreground"
+            className="flex flex-wrap items-center gap-6 md:gap-10 py-8 border-t border-foreground/10 font-body text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-muted-foreground"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-charcoal flex items-center justify-center border-2 border-gold/20 shadow-xl">
-                <span className="font-display font-black text-gold text-lg">S</span>
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-charcoal flex items-center justify-center border-2 border-gold/20 shadow-xl">
+                <span className="font-display font-black text-gold text-base md:text-lg">S</span>
               </div>
               <div>
                 <span className="font-black text-foreground block tracking-[0.2em]">Solitic Editorial</span>
-                <span className="opacity-50 text-[9px]">Intelligence Core</span>
+                <span className="opacity-50 text-[8px] md:text-[9px]">Intelligence Core</span>
               </div>
             </div>
             <div className="hidden sm:block h-8 w-px bg-foreground/10" />
@@ -125,13 +125,13 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
             transition={{ delay: 0.5, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="w-full"
           >
-            <div className="container mx-auto px-6 max-w-6xl py-16">
+            <div className="container mx-auto px-6 max-w-6xl py-8 md:py-16">
               <figure className="relative group overflow-hidden">
                 <div className="absolute inset-0 bg-charcoal/20 group-hover:bg-transparent transition-colors duration-1000 z-10"></div>
                 <img
                   src={post.coverImage}
                   alt={post.title}
-                  className="w-full aspect-[21/9] object-cover grayscale group-hover:grayscale-0 transition-all duration-[2000ms] ease-out scale-110 group-hover:scale-100"
+                  className="w-full aspect-[16/9] md:aspect-[21/9] object-cover grayscale group-hover:grayscale-0 transition-all duration-[2000ms] ease-out scale-110 group-hover:scale-100"
                 />
                 <figcaption className="font-body text-[10px] uppercase tracking-[0.3em] text-muted-foreground/60 mt-6 text-center border-b border-foreground/10 pb-6">
                   Reference: {post.title} · Solitic Archive
@@ -141,9 +141,9 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
           </motion.div>
         )}
 
-        <section className="py-12">
+        <section className="py-8 md:py-12">
           <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-4 gap-20 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 md:gap-20 max-w-7xl mx-auto">
               <motion.article 
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -155,7 +155,7 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
                   dangerouslySetInnerHTML={{ __html: renderContent(post.content) }}
                 />
 
-                <div className="mt-20 pt-10 border-t-4 border-foreground selection:bg-gold">
+                <div className="mt-12 md:mt-20 pt-10 border-t-4 border-foreground selection:bg-gold">
                   <div className="flex flex-wrap items-center justify-between gap-8">
                     <div className="flex items-center gap-3 flex-wrap">
                       <Tag className="w-4 h-4 text-gold" />
@@ -178,13 +178,13 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
                 </div>
               </motion.article>
 
-              <aside className="hidden lg:block">
-                <div className="sticky top-32 space-y-12">
+              <aside className="lg:block">
+                <div className="lg:sticky lg:top-32 space-y-12">
                    <div className="border-t-2 border-gold pt-8">
                     <h3 className="font-display font-black text-xs uppercase tracking-[0.2em] text-gold mb-8">
                       Related Intelligence
                     </h3>
-                    <div className="space-y-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-8">
                       {relatedPosts.map((related, idx) => (
                         <motion.div
                           key={related.id}
@@ -234,15 +234,15 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
       </main>
 
       {relatedPosts.length > 0 && (
-        <section className="py-24 border-t-8 border-foreground dark:border-off-white/20">
+        <section className="py-16 md:py-24 border-t-8 border-foreground dark:border-off-white/20">
           <div className="container mx-auto px-6">
-            <div className="flex items-center gap-6 mb-12">
-              <h2 className="font-display text-4xl font-black uppercase tracking-tighter text-foreground">
-                In Other <span className="italic text-gold underline decoration-4 underline-offset-[12px]">News.</span>
+            <div className="flex flex-col md:flex-row items-center gap-6 mb-12">
+              <h2 className="font-display text-3xl md:text-4xl font-black uppercase tracking-tighter text-foreground">
+                In Other <span className="italic text-gold underline decoration-2 md:decoration-4 underline-offset-[8px] md:underline-offset-[12px]">News.</span>
               </h2>
-              <span className="flex-1 h-px bg-foreground/10" />
+              <span className="flex-1 h-px bg-foreground/10 w-full" />
             </div>
-            <div className="grid md:grid-cols-3 gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               {relatedPosts.map((related, idx) => (
                 <motion.div
                   key={related.id}
@@ -266,7 +266,7 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
                     <span className="font-body text-[10px] font-black uppercase tracking-[0.2em] text-gold block mb-3">
                       {typeof related.tags === "string" ? related.tags.split(",")[0] : "Intelligence"}
                     </span>
-                    <h3 className="font-display text-2xl font-black text-foreground leading-tight group-hover:text-gold transition-colors decoration-2 underline-offset-4 group-hover:underline mb-3">
+                    <h3 className="font-display text-xl md:text-2xl font-black text-foreground leading-tight group-hover:text-gold transition-colors decoration-2 underline-offset-4 group-hover:underline mb-3">
                       {related.title}
                     </h3>
                     <div className="flex items-center gap-3 font-body text-[10px] text-muted-foreground uppercase tracking-widest opacity-60">

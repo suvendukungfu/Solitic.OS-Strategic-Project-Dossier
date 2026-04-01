@@ -19,8 +19,11 @@ model Post {
   excerpt     String?
   tags        String   // SQLite does not support String[], store as joined string or JSON string
   status      String   @default("DRAFT") // "DRAFT" | "PUBLISHED"
+  viewCount   Int      @default(0)
+  readingTime Int      @default(0) // Estimation in minutes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 }
 
 model User {

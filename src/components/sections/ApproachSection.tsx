@@ -43,9 +43,9 @@ export function ApproachSection() {
               delay={index * 0.2}
               direction="left"
             >
-              <div className="flex gap-8 mb-12 last:mb-0">
+              <div className="flex flex-col sm:flex-row gap-8 mb-12 last:mb-0">
                 {/* Number */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 mb-4 sm:mb-0">
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     className="w-16 h-16 md:w-20 md:h-20 rounded-lg bg-gold flex items-center justify-center"

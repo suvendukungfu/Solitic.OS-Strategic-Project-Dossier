@@ -24,9 +24,13 @@ A production-grade, premium Blog Content Management System built with Next.js, T
 1. **Environment Variables**:
    Update the `.env` file with your database credentials:
    ```env
-   DATABASE_URL="postgresql://user:password@host:5432/db"
+   DATABASE_URL="file:./prisma/dev.db"
    NEXTAUTH_SECRET="your-secret"
-   NEXTAUTH_URL="http://localhost:8080"
+   NEXTAUTH_URL="http://localhost:3000"
+   NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+   RESEND_API_KEY="re_xxx"
+   CONTACT_TO_EMAIL="contact@solitic.in"
+   CONTACT_FROM_EMAIL="onboarding@resend.dev"
    ```
 
 2. **Database Initialization**:
@@ -46,11 +50,18 @@ A production-grade, premium Blog Content Management System built with Next.js, T
 
 4. **Run Development Server**:
    ```bash
+   npm run db:push
    npm run dev
    ```
 
 5. **Access CMS**:
    Navigate to `/admin/login` to authenticate and start writing stories.
+
+## Deployment Notes
+
+- `next.config.mjs` is configured with `output: 'standalone'` for Node hosting and reverse-proxy/domain setups.
+- Set `NEXT_PUBLIC_SITE_URL` and `NEXTAUTH_URL` to your final production domain so metadata, sitemap, robots, and auth callbacks resolve correctly.
+- If you deploy to an ephemeral/serverless host, move uploads and the database off local disk. The current local `public/uploads` and SQLite setup are suitable for persistent Node/VPS hosting, not stateless storage.
 
 ## Architecture
 - `/app/blog`: Public-facing blog listing and story pages.

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '../../../lib/prisma';
 import { z } from 'zod';
+import { siteConfig } from '../../../lib/site';
 
 // NOTE: Using Resend for email. Alternatively use Nodemailer with Gmail SMTP.
 // If RESEND_API_KEY is set, it uses Resend. Otherwise falls back to a logged notification.
@@ -223,9 +224,9 @@ export async function POST(req: Request) {
     }
 
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
-    const ADMIN_EMAIL = 'contact@solitic.in'; // Hard-coded production target
-    const FROM_NAME = 'Solitic.OS Intelligence';
-    const FROM_EMAIL = 'onboarding@resend.dev'; // Resend restricted sender for unverified domains
+    const ADMIN_EMAIL = process.env.CONTACT_TO_EMAIL || siteConfig.email;
+    const FROM_NAME = process.env.CONTACT_FROM_NAME || 'Solitic.OS Intelligence';
+    const FROM_EMAIL = process.env.CONTACT_FROM_EMAIL || 'onboarding@resend.dev';
 
     // 3. Email Delivery Orchestration (with built-in Retries)
     if (RESEND_API_KEY) {
