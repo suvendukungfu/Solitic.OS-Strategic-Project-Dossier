@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { PostStatus } from "@/lib/types";
+import { authOptions } from "../../../../lib/auth";
+import { prisma } from "../../../../lib/prisma";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from 'next/cache';
+import { postSchema } from '../../../../lib/validations/post';
+import { calculateReadingTime } from '../../../../lib/utils';
 
 // Public: GET single post by slug
 export async function GET(
@@ -18,6 +20,15 @@ export async function GET(
 
     if (!post) {
       return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    }
+
+    if (post.status !== 'PUBLISHED') {
+      const session = await getServerSession(authOptions);
+      const user = session?.user as { role?: string; email?: string } | undefined;
+
+      if (!session || !['ADMIN', 'EDITOR'].includes(user?.role || '')) {
+        return NextResponse.json({ message: 'Post not found' }, { status: 404 });
+      }
     }
 
     const transformedPost = {
@@ -46,19 +57,23 @@ export async function PUT(
 
   try {
     const body = await req.json();
-    const { id, title, slug, content, excerpt, coverImage, tags, status } = body;
+    const validatedData = postSchema.parse(body);
+    
+    // Explicitly destructure to avoid passing 'id' to prisma and to calculate stats
+    const { id, ...updateData } = validatedData;
+    const readingTime = calculateReadingTime(validatedData.content);
+
+    const updatePayload = {
+      ...updateData,
+      readingTime,
+      tags: updateData.tags || '',
+      coverImage: updateData.coverImage || null,
+      excerpt: updateData.excerpt || null,
+    } as unknown as Prisma.PostUpdateInput;
 
     const post = await prisma.post.update({
-      where: { id: id },
-      data: {
-        title,
-        slug,
-        content,
-        excerpt,
-        coverImage,
-        tags: typeof tags === 'string' ? tags : (Array.isArray(tags) ? tags.join(',') : ''),
-        status,
-      },
+      where: { id: id as string },
+      data: updatePayload,
     });
 
     // Instant real-time update for frontend
