@@ -19,7 +19,7 @@ export function Footer() {
       </div>
       
       <div className="container mx-auto px-6 py-16 relative z-10">
-        <div className="grid md:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="inline-block mb-6">

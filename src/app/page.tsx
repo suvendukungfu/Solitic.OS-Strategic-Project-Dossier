@@ -8,6 +8,7 @@ import { ExpectedOutcomesSection } from "@/components/sections/ExpectedOutcomesS
 import { ApproachSection } from "@/components/sections/ApproachSection";
 import { ClientsSection } from "@/components/sections/ClientsSection";
 import { CTASection } from "@/components/sections/CTASection";
+import { RegulatoryLinksSection } from "@/components/sections/RegulatoryLinksSection";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <ApproachSection />
         <ClientsSection />
         <CTASection />
+        <RegulatoryLinksSection />
       </main>
       <Footer />
     </div>

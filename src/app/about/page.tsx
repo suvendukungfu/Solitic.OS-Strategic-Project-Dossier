@@ -74,7 +74,7 @@ export default function AboutPage() {
               </h2>
             </AnimatedSection>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {values.map((value, index) => (
                 <AnimatedSection key={index} delay={index * 0.1}>
                   <div className="text-center p-8 bg-card rounded-2xl border border-border hover:border-gold/30 transition-all duration-300">
@@ -97,7 +97,7 @@ export default function AboutPage() {
         {/* Founder */}
         <section className="py-24 bg-secondary">
           <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <AnimatedSection direction="left">
                 <div className="aspect-square max-w-md mx-auto lg:mx-0 rounded-xl bg-charcoal p-12 flex items-center justify-center shadow-golden-glow">
                   <div className="text-center">
@@ -146,7 +146,7 @@ export default function AboutPage() {
               </h2>
             </AnimatedSection>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {outcomes.map((outcome, index) => (
                 <AnimatedSection key={index} delay={index * 0.1}>
                   <div className="flex items-center gap-4 p-6 rounded-xl border border-off-white/10 bg-off-white/5 hover:bg-off-white/10 transition-colors duration-300">
