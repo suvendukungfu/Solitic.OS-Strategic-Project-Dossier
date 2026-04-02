@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { put } from '@vercel/blob'; // Dynamic import handled via conditional check
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
@@ -21,7 +22,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "No file received" }, { status: 400 });
     }
 
-    // Advanced Institutional Constraint: 5MB Threshold
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json({ message: "Asset too large. Max 5MB authorized." }, { status: 400 });
     }
@@ -30,11 +30,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Must be a valid institutional visual format (Image)" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    // Create a safe, unique filename
     const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-    
-    // Assumes writing to the active running directory which resolves to the project root
+
+    // PRODUCTION: Vercel Blob (Serverless Compatible)
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const blob = await put(filename, file, {
+        access: 'public',
+      });
+      return NextResponse.json({ url: blob.url }, { status: 200 });
+    }
+
+    // DEVELOPMENT: Local Storage Fallback
+    const buffer = Buffer.from(await file.arrayBuffer());
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     
     if (!existsSync(uploadDir)) {
@@ -42,8 +49,6 @@ export async function POST(req: Request) {
     }
     
     await writeFile(path.join(uploadDir, filename), buffer);
-
-    // Return the URL directly to the uploaded image
     return NextResponse.json({ url: `/uploads/${filename}` }, { status: 200 });
 
   } catch (error) {
