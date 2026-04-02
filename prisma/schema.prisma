@@ -17,7 +17,7 @@ model Post {
   content     Json     // SQLite stores this as text under the hood
   coverImage  String?
   excerpt     String?
-  tags        String[]   // SQLite does not support String[], store as joined string or JSON string
+  tags        String   // SQLite does not support String[], store as joined string or JSON string
   status      String   @default("DRAFT") // "DRAFT" | "PUBLISHED"
   viewCount   Int      @default(0)
   readingTime Int      @default(0) // Estimation in minutes
