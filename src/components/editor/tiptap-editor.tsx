@@ -147,6 +147,7 @@ export default function BlogEditor({ initialData }: { initialData?: any }) {
   const tagsRef = useRef(tags);
   const postIdRef = useRef<string | null>(initialData?.id ?? null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editorImageInputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
     contentRef.current = content;
@@ -305,6 +306,27 @@ export default function BlogEditor({ initialData }: { initialData?: any }) {
 
   if (!editor) return null;
 
+  const handleEditorImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !editor) return;
+
+    const toastId = toast.loading('Uploading asset...');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post('/api/upload', formData);
+      const uploadedUrl = response.data?.url;
+      if (!uploadedUrl) throw new Error('Upload failed');
+      
+      editor.chain().focus().setImage({ src: uploadedUrl }).run();
+      toast.success('Asset integrated successfully', { id: toastId });
+    } catch (error) {
+      toast.error('Asset upload failed', { id: toastId });
+    } finally {
+      event.target.value = '';
+    }
+  };
+
   const MenuBar = () => {
     const toggleLink = () => {
       const url = window.prompt('Enter institutional asset URL');
@@ -316,14 +338,18 @@ export default function BlogEditor({ initialData }: { initialData?: any }) {
     };
 
     const addImage = () => {
-      const url = window.prompt('Enter image asset URL');
-      if (url) {
-        editor.chain().focus().setImage({ src: url }).run();
-      }
+      editorImageInputRef.current?.click();
     };
 
     return (
       <div className="flex flex-wrap items-center gap-2 p-2 bg-[#1A1A1A] border border-white/5 rounded-2xl shadow-2xl backdrop-blur-3xl sticky top-20 z-50 transition-all duration-500">
+        <input 
+          type="file" 
+          ref={editorImageInputRef} 
+          accept="image/*" 
+          className="hidden" 
+          onChange={handleEditorImageUpload} 
+        />
         <div className="flex items-center gap-1.5 px-3 border-r border-white/5">
           <button 
             onClick={() => editor.chain().focus().undo().run()}
