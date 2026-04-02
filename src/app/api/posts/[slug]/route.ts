@@ -33,7 +33,7 @@ export async function GET(
 
     const transformedPost = {
       ...post,
-      tags: typeof post.tags === 'string' ? post.tags.split(',') : []
+      tags: post.tags ? String(post.tags).split(',') : []
     };
 
     return NextResponse.json(transformedPost);

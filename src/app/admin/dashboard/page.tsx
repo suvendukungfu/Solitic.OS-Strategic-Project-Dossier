@@ -286,7 +286,7 @@ export default async function AdminDashboard() {
                     </p>
                     {post.tags && (
                       <span className="font-sans text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                        {typeof post.tags === "string" ? post.tags.split(",")[0] : ""}
+                        {post.tags ? String(post.tags).split(",")[0] : ""}
                       </span>
                     )}
                   </div>

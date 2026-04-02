@@ -41,7 +41,7 @@ export async function generateMetadata(props: {
       images: imageUrl ? [imageUrl] : [],
       type: "article",
       publishedTime: post.createdAt.toISOString(),
-      tags: typeof post.tags === "string" ? post.tags.split(",") : [],
+      tags: post.tags ? String(post.tags).split(",") : [],
     },
     twitter: {
       card: "summary_large_image",

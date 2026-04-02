@@ -180,7 +180,7 @@ export function BlogListingUI({ posts }: { posts: any[] }) {
                               </div>
                             )}
                             <div className="space-y-4 flex-1">
-                              <span className="font-display font-black text-[10px] uppercase tracking-[0.2em] text-gold">{typeof post.tags === "string" ? post.tags.split(",")[0] : "INTELLIGENCE"}</span>
+                              <span className="font-display font-black text-[10px] uppercase tracking-[0.2em] text-gold">{post.tags ? String(post.tags).split(",")[0] : "INTELLIGENCE"}</span>
                               <h3 className="font-display text-2xl font-black text-foreground leading-tight group-hover:text-gold transition-colors line-clamp-3 mb-2">{post.title}</h3>
                               <p className="font-body text-sm text-muted-foreground/80 line-clamp-2 leading-relaxed">{post.excerpt}</p>
                             </div>
@@ -214,7 +214,7 @@ export function BlogListingUI({ posts }: { posts: any[] }) {
                             <Link href={`/blog/${post.slug}`} className="group py-8 first:pt-0 flex gap-6">
                               <div className="font-display font-black text-3xl text-foreground/5 group-hover:text-gold/20 transition-colors duration-500">0{idx + 1}</div>
                               <div className="flex flex-col gap-2">
-                                <span className="font-display font-black text-[10px] uppercase tracking-[0.2em] text-gold/60">{typeof post.tags === "string" ? post.tags.split(",")[0] : "INTEL"}</span>
+                                <span className="font-display font-black text-[10px] uppercase tracking-[0.2em] text-gold/60">{post.tags ? String(post.tags).split(",")[0] : "INTEL"}</span>
                                 <h4 className="font-display text-lg font-bold text-foreground group-hover:text-gold transition-colors leading-tight decoration-gold decoration-1 group-hover:underline underline-offset-4">{post.title}</h4>
                                 <div className="flex items-center gap-3 font-body text-[10px] text-muted-foreground/60 uppercase tracking-widest mt-2">
                                   <span>{format(new Date(post.createdAt), "MMM d")}</span>
@@ -272,7 +272,7 @@ export function BlogListingUI({ posts }: { posts: any[] }) {
                         <Link href={`/blog/${post.slug}`} className="group flex border-t-2 border-foreground/10 pt-10 h-full flex-col">
                           <div className="space-y-6 flex-1">
                             <div className="flex items-center justify-between">
-                              <span className="font-display font-black text-[10px] uppercase tracking-[0.2em] text-gold">{typeof post.tags === "string" ? post.tags.split(",")[0] : "ARCHIVE"}</span>
+                              <span className="font-display font-black text-[10px] uppercase tracking-[0.2em] text-gold">{post.tags ? String(post.tags).split(",")[0] : "ARCHIVE"}</span>
                               <span className="font-body text-[10px] uppercase tracking-widest text-muted-foreground/40">VOL-00-{idx + 10}</span>
                             </div>
                             <h3 className="font-display text-2xl md:text-3xl font-black text-foreground group-hover:text-gold transition-colors leading-[1.1] tracking-tight">{post.title}</h3>

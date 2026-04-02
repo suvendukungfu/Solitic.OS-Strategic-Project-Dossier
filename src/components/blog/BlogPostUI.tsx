@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: any[] }) {
-  const tags = typeof post.tags === "string" ? post.tags.split(",").filter(Boolean) : [];
+  const tags = post.tags ? String(post.tags).split(",").filter(Boolean) : [];
   
   // More accurate reading time calculation: ~200 words per minute
   const contentText = JSON.stringify(post.content).replace(/[^\w\s]|_/g, "").replace(/\s+/g, " ");
@@ -197,7 +197,7 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
                             className="group block"
                           >
                             <span className="font-body text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 block mb-2">
-                              {typeof related.tags === "string" ? related.tags.split(",")[0] : "Story"}
+                              {related.tags ? String(related.tags).split(",")[0] : "Story"}
                             </span>
                             <h4 className="font-display text-base font-bold text-foreground leading-tight group-hover:text-gold transition-colors decoration-gold decoration-2 underline-offset-4 group-hover:underline">
                               {related.title}
@@ -264,7 +264,7 @@ export function BlogPostUI({ post, relatedPosts }: { post: any, relatedPosts: an
                       </div>
                     )}
                     <span className="font-body text-[10px] font-black uppercase tracking-[0.2em] text-gold block mb-3">
-                      {typeof related.tags === "string" ? related.tags.split(",")[0] : "Intelligence"}
+                      {related.tags ? String(related.tags).split(",")[0] : "Intelligence"}
                     </span>
                     <h3 className="font-display text-xl md:text-2xl font-black text-foreground leading-tight group-hover:text-gold transition-colors decoration-2 underline-offset-4 group-hover:underline mb-3">
                       {related.title}

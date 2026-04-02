@@ -12,7 +12,7 @@ export default async function ManagePosts() {
 
   const plainPosts = posts.map(post => ({
     ...post,
-    tags: typeof post.tags === 'string' ? post.tags.split(',').filter(Boolean) : [],
+    tags: post.tags ? String(post.tags).split(',').filter(Boolean) : [],
     status: post.status as PostStatus,
   }));
 

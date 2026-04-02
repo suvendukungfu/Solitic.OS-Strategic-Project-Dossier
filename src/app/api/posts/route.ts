@@ -16,7 +16,7 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     })).map(post => ({
       ...post,
-      tags: typeof post.tags === 'string' ? post.tags.split(',').filter(Boolean) : []
+      tags: post.tags ? String(post.tags).split(',').filter(Boolean) : []
     }));
     
     return apiSuccess(posts);
