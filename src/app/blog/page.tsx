@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
 import { BlogListingUI } from "@/components/blog/BlogListingUI";
 import { Metadata } from "next";
 import { absoluteUrl, siteConfig } from "@/lib/site";

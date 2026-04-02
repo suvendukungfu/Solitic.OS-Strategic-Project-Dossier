@@ -15,6 +15,7 @@ import {
 import * as motion from "framer-motion/client";
 
 export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
   const postsCount = await prisma.post.count();
