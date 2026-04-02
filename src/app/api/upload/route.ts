@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
+import cloudinary from "@/lib/cloudinary";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -21,7 +19,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "No file received" }, { status: 400 });
     }
 
-    // Advanced Institutional Constraint: 5MB Threshold
     if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json({ message: "Asset too large. Max 5MB authorized." }, { status: 400 });
     }
@@ -30,21 +27,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Must be a valid institutional visual format (Image)" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    // Create a safe, unique filename
-    const filename = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '')}`;
-    
-    // Assumes writing to the active running directory which resolves to the project root
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-    
-    await writeFile(path.join(uploadDir, filename), buffer);
+    // Convert file to base64 buffer for Cloudinary SDK
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64Data = buffer.toString('base64');
+    const fileUri = `data:${file.type};base64,${base64Data}`;
 
-    // Return the URL directly to the uploaded image
-    return NextResponse.json({ url: `/uploads/${filename}` }, { status: 200 });
+    // Upload to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(fileUri, {
+      folder: 'solitic-assets',
+    });
+
+    return NextResponse.json({ url: uploadResponse.secure_url }, { status: 200 });
 
   } catch (error) {
     console.error("Upload error:", error);
