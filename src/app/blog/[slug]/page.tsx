@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { absoluteUrl, siteConfig } from "@/lib/site";
+import { MOCKUP_POSTS } from "@/lib/blog-data";
 
 export const dynamic = "force-dynamic";
 
@@ -14,14 +15,23 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const session = await getServerSession(authOptions);
   const userRole = (session?.user as { role?: string })?.role;
-  const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
-  });
+  
+  let post: any = null;
+  try {
+    const dbPost = await prisma.post.findUnique({
+      where: { slug: params.slug },
+    });
+    post = dbPost;
+  } catch (e) {
+    console.error("Prisma error in metadata:", e);
+  }
 
-  if (
-    !post ||
-    (post.status !== "PUBLISHED" && userRole !== "ADMIN" && userRole !== "EDITOR")
-  ) {
+  // Fallback to mockup data
+  if (!post) {
+    post = MOCKUP_POSTS.find(p => p.slug === params.slug);
+  }
+
+  if (!post) {
     return { title: "Post Not Found | Solitic Consulting" };
   }
 
@@ -40,7 +50,7 @@ export async function generateMetadata(props: {
       description: post.excerpt || "Legal and strategic insights from Solitic Consulting.",
       images: imageUrl ? [imageUrl] : [],
       type: "article",
-      publishedTime: post.createdAt.toISOString(),
+      publishedTime: typeof post.createdAt === 'string' ? post.createdAt : post.createdAt.toISOString(),
       tags: post.tags ? String(post.tags).split(",") : [],
     },
     twitter: {
@@ -56,9 +66,20 @@ export default async function BlogPostPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const params = await props.params;
-  const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
-  });
+  let post: any = null;
+  try {
+    const dbPost = await prisma.post.findUnique({
+      where: { slug: params.slug },
+    });
+    post = dbPost;
+  } catch (e) {
+    console.error("Prisma error in page body:", e);
+  }
+
+  // Fallback to mockup data
+  if (!post) {
+    post = MOCKUP_POSTS.find(p => p.slug === params.slug);
+  }
 
   if (!post) {
     notFound();
@@ -72,14 +93,24 @@ export default async function BlogPostPage(props: {
     }
   }
 
-  const relatedPosts = await prisma.post.findMany({
-    where: { 
-      status: "PUBLISHED", 
-      NOT: { id: post.id },
-    },
-    take: 3,
-    orderBy: { createdAt: "desc" },
-  });
+  let relatedPosts: any[] = [];
+  try {
+    relatedPosts = await prisma.post.findMany({
+      where: { 
+        status: "PUBLISHED", 
+        NOT: { id: post.id },
+      },
+      take: 3,
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (e) {
+    relatedPosts = [];
+  }
+  
+  // Combine with dummy related posts if DB empty or fetch fails
+  const finalRelatedPosts = relatedPosts.length > 0 
+    ? relatedPosts 
+    : MOCKUP_POSTS.filter(p => p.slug !== params.slug).slice(0, 3);
 
-  return <BlogPostUI post={post} relatedPosts={relatedPosts} />;
+  return <BlogPostUI post={post} relatedPosts={finalRelatedPosts} />;
 }
