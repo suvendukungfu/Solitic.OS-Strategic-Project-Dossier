@@ -1,192 +1,261 @@
 'use client';
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./ThemeToggle";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState, type MouseEvent } from "react";
+
+import { cn } from "@/lib/utils";
 import { SoliticLogo } from "./SoliticLogo";
-import { cn } from "../lib/utils";
 
 const navLinks = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Blog", path: "/blog" },
-  { name: "Contact", path: "/contact" },
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
+function isActivePath(pathname: string, href: string) {
+  if (href === "/") {
+    return pathname === "/";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+interface NavItemProps {
+  active: boolean;
+  href: string;
+  label: string;
+  mobile?: boolean;
+  onClick: (event: MouseEvent<HTMLAnchorElement>) => void;
+}
+
+function NavItem({ active, href, label, mobile = false, onClick }: NavItemProps) {
+  if (mobile) {
+    return (
+      <Link
+        href={href}
+        aria-current={active ? "page" : undefined}
+        onClick={onClick}
+        className={cn(
+          "group relative flex items-center justify-between rounded-2xl px-5 py-4 text-base font-medium tracking-[-0.01em] transition-all duration-300",
+          active
+            ? "bg-gold/12 text-gold ring-1 ring-inset ring-gold/25"
+            : "text-foreground/80 hover:bg-foreground/[0.04] hover:text-foreground",
+        )}
+      >
+        <span>{label}</span>
+        <span
+          className={cn(
+            "h-px w-10 rounded-full bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100",
+            active && "opacity-100",
+          )}
+        />
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      onClick={onClick}
+      className={cn(
+        "group relative inline-flex min-w-[5.25rem] items-center justify-center rounded-full px-4 py-2.5 text-sm font-medium tracking-[-0.01em] transition-colors duration-300 lg:min-w-[5.75rem] lg:px-5",
+        active ? "text-gold" : "text-foreground/75 hover:text-foreground",
+      )}
+    >
+      {active && (
+        <motion.span
+          layoutId="desktop-nav-highlight"
+          className="absolute inset-0 rounded-full bg-gold/12 ring-1 ring-inset ring-gold/25"
+          transition={{ type: "spring", stiffness: 360, damping: 30 }}
+        />
+      )}
+      <span className="relative z-10">{label}</span>
+      <span
+        className={cn(
+          "absolute inset-x-4 bottom-1.5 h-px origin-left rounded-full bg-gradient-to-r from-transparent via-gold to-transparent opacity-0 transition-all duration-300 group-hover:scale-x-100 group-hover:opacity-100",
+          active ? "scale-x-100 opacity-100" : "scale-x-0",
+        )}
+      />
+    </Link>
+  );
+}
+
 export function Navbar() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 24);
     };
-    window.addEventListener("scroll", handleScroll);
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     setIsOpen(false);
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  const handleNavClick = (href: string) => (event: MouseEvent<HTMLAnchorElement>) => {
+    if (href === pathname) {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [pathname, isOpen]);
+
+    setIsOpen(false);
+  };
+
+  const controlShellClasses = cn(
+    "rounded-full border px-3 py-2 shadow-[0_12px_36px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-all duration-300",
+    scrolled
+      ? "border-border/70 bg-background/88"
+      : "border-white/15 bg-background/60 supports-[backdrop-filter]:bg-background/45",
+  );
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={cn(
-        "fixed top-0 left-0 right-0 z-[100] transition-all duration-500",
-        scrolled || isOpen
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-elegant"
-          : "bg-transparent"
-      )}
-    >
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link href="/" className="relative z-[110]">
-            <SoliticLogo size="sm" animated={false} />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link, index) => (
-              <motion.div
-                key={link.path}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link
-                  href={link.path}
-                  className={cn(
-                    "font-body text-sm font-medium transition-all duration-300 link-underline relative group",
-                    pathname === link.path
-                      ? "text-gold"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {link.name}
-                  <span className="absolute inset-0 -z-10 bg-gold/0 group-hover:bg-gold/5 rounded-lg transition-colors duration-300" />
-                </Link>
-              </motion.div>
-            ))}
-          </nav>
-
-          {/* Right Section */}
-          <div className="flex items-center gap-3 relative z-[110]">
-            <ThemeToggle />
-            
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden lg:block"
+    <>
+      <motion.header
+        initial={{ y: -24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        className={cn(
+          "fixed inset-x-0 top-0 z-[100] transition-all duration-300",
+          scrolled
+            ? "border-b border-border/60 bg-background/85 shadow-lg backdrop-blur-xl"
+            : "bg-transparent py-5",
+        )}
+      >
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="relative flex h-20 items-center justify-center">
+            <Link
+              href="/"
+              onClick={handleNavClick("/")}
+              className={cn(
+                "absolute left-0 top-1/2 z-20 -translate-y-1/2",
+                controlShellClasses,
+              )}
+              aria-label="Solitic home"
             >
-              <Button variant="gold" className="relative overflow-hidden group" asChild>
-                <Link href="/contact">
-                  <span className="relative z-10">Get Started</span>
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
-                  />
-                </Link>
-              </Button>
-            </motion.div>
-            
-            {/* Tactical Mobile Toggle */}
-            <motion.button
-              onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-gold/10 text-gold border border-gold/20 hover:bg-gold/20 transition-all outline-none"
-              whileTap={{ scale: 0.9 }}
+              <SoliticLogo size="sm" animated={false} />
+            </Link>
+
+            <nav
+              aria-label="Primary navigation"
+              className={cn(
+                "hidden md:flex items-center gap-1 rounded-full border px-2 py-1.5 shadow-[0_14px_44px_rgba(15,23,42,0.12)] backdrop-blur-xl",
+                scrolled
+                  ? "border-border/70 bg-background/88"
+                  : "border-white/15 bg-background/60 supports-[backdrop-filter]:bg-background/45",
+              )}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
+              {navLinks.map((link) => (
+                <NavItem
+                  key={link.href}
+                  active={isActivePath(pathname, link.href)}
+                  href={link.href}
+                  label={link.label}
+                  onClick={handleNavClick(link.href)}
+                />
+              ))}
+            </nav>
+
+            <button
+              type="button"
+              aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-controls="mobile-navigation"
+              aria-expanded={isOpen}
+              onClick={() => setIsOpen((open) => !open)}
+              className={cn(
+                "absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center md:hidden",
+                controlShellClasses,
+              )}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
                   key={isOpen ? "close" : "open"}
-                  initial={{ opacity: 0, rotate: -90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: 90 }}
-                  transition={{ duration: 0.2 }}
+                  initial={{ opacity: 0, rotate: -45, scale: 0.85 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 45, scale: 0.85 }}
+                  transition={{ duration: 0.18 }}
+                  className="flex items-center justify-center"
                 >
-                  {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </motion.div>
+                  {isOpen ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
+                </motion.span>
               </AnimatePresence>
-            </motion.button>
+            </button>
           </div>
         </div>
-      </div>
+      </motion.header>
 
-      {/* Mobile Tactical Drawer */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 lg:hidden bg-background/98 backdrop-blur-3xl z-[105] flex flex-col justify-center px-8 md:px-16"
+            className="fixed inset-0 z-[95] md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            {/* Background Texture */}
-            <div className="absolute inset-0 bg-grid opacity-20 pointer-events-none" />
-            
-            <nav className="flex flex-col gap-8 relative z-10">
-              {navLinks.map((link, index) => (
-                <motion.div
-                  key={link.path}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 + index * 0.1 }}
-                >
-                  <Link
-                    href={link.path}
-                    className={cn(
-                      "font-display text-4xl md:text-5xl font-black transition-all tracking-tighter italic",
-                      pathname === link.path
-                        ? "text-gold translate-x-4"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                </motion.div>
-              ))}
-              
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                className="pt-10"
-              >
-                <Button variant="gold" size="lg" className="w-full text-lg font-black h-16 rounded-[1.25rem] shadow-elegant group" asChild>
-                  <Link href="/contact" className="flex items-center justify-center gap-3">
-                    Get Started
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                  </Link>
-                </Button>
-              </motion.div>
-            </nav>
+            <button
+              type="button"
+              aria-label="Close navigation menu"
+              className="absolute inset-0 bg-charcoal/20 backdrop-blur-sm"
+              onClick={() => setIsOpen(false)}
+            />
 
-            {/* Tactical Footer for Drawer */}
-            <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               transition={{ delay: 0.7 }}
-               className="absolute bottom-12 left-8 md:left-16 flex flex-col gap-2"
+            <motion.div
+              id="mobile-navigation"
+              initial={{ opacity: 0, y: -18, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.98 }}
+              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute left-4 right-4 top-[5.5rem] rounded-[28px] border border-border/70 bg-background/95 p-3 shadow-[0_28px_80px_rgba(15,23,42,0.16)] backdrop-blur-2xl"
             >
-               <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/10 italic">Management: Authorized Terminal</span>
-               <div className="w-12 h-1 bg-gold shadow-[0_0_15px_rgba(212,175,55,0.4)] rounded-full" />
+              <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
+                {navLinks.map((link) => (
+                  <NavItem
+                    key={link.href}
+                    mobile
+                    active={isActivePath(pathname, link.href)}
+                    href={link.href}
+                    label={link.label}
+                    onClick={handleNavClick(link.href)}
+                  />
+                ))}
+              </nav>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </>
   );
 }
