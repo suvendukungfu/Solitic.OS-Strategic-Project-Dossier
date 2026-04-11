@@ -26,7 +26,7 @@ const steps = [
 export function ApproachSection() {
   return (
     <section className="py-24 bg-background">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 relative z-[60]">
         <AnimatedSection className="text-center mb-16">
           <span className="font-body text-sm font-medium text-gold uppercase tracking-wider">
             Our Approach
