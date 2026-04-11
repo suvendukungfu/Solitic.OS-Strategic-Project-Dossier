@@ -45,7 +45,7 @@ export function WhatsInForYouSection() {
     <section className="relative py-24 bg-background overflow-hidden">
       <GlitterEffect count={15} className="opacity-30" />
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-[60]">
         <AnimatedSection className="text-center mb-16">
           <span className="font-body text-sm font-medium text-gold uppercase tracking-wider">
             Who We Serve
@@ -74,63 +74,66 @@ export function WhatsInForYouSection() {
           </h2>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {clientTypes.map((client, index) => (
             <AnimatedSection key={index} delay={index * 0.15}>
               <motion.div
-                className="group h-full p-8 bg-card rounded-xl border border-border relative overflow-hidden"
-                whileHover={{ 
-                  y: -8,
-                  boxShadow: "0 25px 50px -12px hsla(42, 52%, 54%, 0.2)",
-                }}
-                transition={{ duration: 0.4 }}
+                className="group h-full flex flex-col p-8 bg-card rounded-2xl border border-border relative overflow-hidden
+                           backdrop-blur-sm
+                           hover:border-gold/30
+                           hover:shadow-[0_20px_48px_-12px_hsla(42,52%,54%,0.15)]
+                           transition-all duration-500 ease-out"
+                whileHover={{ y: -6, scale: 1.02 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
               >
                 {/* Hover glow */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                />
+                <div className="absolute inset-0 bg-gradient-to-br from-gold/[0.04] to-transparent
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
                 {/* Icon */}
-                <motion.div
-                  className="w-14 h-14 rounded-xl bg-gold/10 flex items-center justify-center mb-6 relative z-10"
-                  whileHover={{ rotate: 5, scale: 1.1 }}
-                >
+                <div className="w-14 h-14 rounded-xl bg-gold/10 flex items-center justify-center mb-6 relative z-10 flex-shrink-0
+                                group-hover:bg-gold/20 transition-colors duration-300">
                   <client.icon className="w-7 h-7 text-gold" />
-                </motion.div>
-
-                {/* Content */}
-                <h3 className="font-display text-xl font-bold text-foreground mb-2 relative z-10">
-                  {client.title}
-                </h3>
-                <p className="font-body text-sm text-muted-foreground mb-4 relative z-10">
-                  {client.subtitle}
-                </p>
-                
-                <div className="space-y-2 mb-6 relative z-10">
-                  <p className="font-body text-xs text-gold uppercase tracking-wider">Challenges you may face:</p>
-                  <ul className="space-y-2">
-                    {client.challenges.map((challenge, idx) => (
-                      <motion.li
-                        key={idx}
-                        className="flex items-start gap-2 text-sm text-muted-foreground"
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.3 + idx * 0.1 }}
-                      >
-                        <ArrowRight className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" />
-                        <span>{challenge}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
                 </div>
 
-                <p className="font-body text-sm text-foreground/80 border-t border-border pt-4 relative z-10">
-                  {client.solution}
-                </p>
+                {/* Content — flex-1 so it fills the space */}
+                <div className="relative z-10 flex flex-col flex-1">
+                  <h3 className="font-display text-xl font-bold text-foreground mb-2
+                                 group-hover:text-gold transition-colors duration-300">
+                    {client.title}
+                  </h3>
+                  <p className="font-body text-sm text-muted-foreground mb-5">
+                    {client.subtitle}
+                  </p>
+                  
+                  <div className="space-y-2 mb-6">
+                    <p className="font-body text-xs text-gold uppercase tracking-wider font-medium">Challenges you may face:</p>
+                    <ul className="space-y-2">
+                      {client.challenges.map((challenge, idx) => (
+                        <motion.li
+                          key={idx}
+                          className="flex items-start gap-2 text-sm text-muted-foreground"
+                          initial={{ opacity: 0, x: -10 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.3 + idx * 0.1 }}
+                        >
+                          <ArrowRight className="w-4 h-4 text-gold flex-shrink-0 mt-0.5" />
+                          <span>{challenge}</span>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Solution pushed to bottom with mt-auto */}
+                  <p className="font-body text-sm text-foreground/80 border-t border-border pt-4 mt-auto">
+                    {client.solution}
+                  </p>
+                </div>
 
                 {/* Corner accent */}
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-gold/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-gold/[0.06] to-transparent rounded-bl-full
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.div>
             </AnimatedSection>
           ))}
