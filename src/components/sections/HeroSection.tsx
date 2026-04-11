@@ -1,25 +1,41 @@
 'use client';
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Building2, Shield, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FloatingParticles, GlitterEffect } from "@/components/GlitterEffect";
 import heroBg from "@/assets/hero-corporate.jpg";
 import soliticLogo from "@/assets/solitic-logo.png";
+import { cn } from "@/lib/utils";
+import { useRef } from "react";
 
 export function HeroSection() {
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollY } = useScroll();
+  
+  // Parallax effects
+  const bgY = useTransform(scrollY, [0, 800], [0, 200]);
+  const contentY = useTransform(scrollY, [0, 800], [0, -100]);
+  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+
   const bgImg = typeof heroBg === "object" && "src" in heroBg ? (heroBg as { src: string }).src : heroBg;
   const logoImg = typeof soliticLogo === "object" && "src" in soliticLogo ? (soliticLogo as { src: string }).src : soliticLogo;
 
+  const titleWords = "Your Business Has Gaps.".split(" ");
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-charcoal">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 opacity-40"
+    <section 
+      ref={containerRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-charcoal"
+    >
+      {/* Background Image with Parallax */}
+      <motion.div
+        className="absolute inset-0 opacity-40 will-change-transform"
         style={{
           backgroundImage: `url(${bgImg})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          y: bgY
         }}
       />
       
@@ -29,10 +45,7 @@ export function HeroSection() {
       {/* Grid pattern */}
       <div className="absolute inset-0 bg-grid opacity-50" />
       
-      {/* Floating particles */}
       <FloatingParticles count={25} />
-      
-      {/* Glitter effect */}
       <GlitterEffect count={40} className="opacity-40" />
       
       {/* Animated gradient orbs */}
@@ -43,169 +56,184 @@ export function HeroSection() {
           x: [0, 50, 0],
           y: [0, 30, 0],
         }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
-      <motion.div
-        className="absolute bottom-1/4 -right-1/4 w-[500px] h-[500px] rounded-full bg-gold/5 blur-3xl"
-        animate={{
-          scale: [1.2, 1, 1.2],
-          x: [0, -30, 0],
-          y: [0, -50, 0],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 pt-20">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Logo Image */}
+      
+      {/* Content Container with Parallax */}
+      <motion.div 
+        style={{ y: contentY }}
+        className="relative z-[60] container mx-auto px-6 pt-20"
+      >
+        <div className="max-w-5xl mx-auto text-center">
+          {/* Logo - Senior Level entry */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="flex justify-center mb-8"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="flex justify-center mb-12 sm:mb-16"
           >
-            <img 
-              src={logoImg as string} 
-              alt="Solitic Consulting" 
-              className="h-32 md:h-40 w-auto"
-            />
+            <div className="relative">
+              <img 
+                src={logoImg as string} 
+                alt="Solitic Consulting" 
+                className="h-20 sm:h-28 md:h-32 w-auto filter drop-shadow-[0_0_30px_rgba(201,166,70,0.15)] relative z-10"
+              />
+              <motion.div 
+                className="absolute inset-0 bg-gold/5 blur-3xl rounded-full"
+                animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
           </motion.div>
-
-          {/* Badge */}
+ 
+          {/* Senior Level Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/5 bg-white/5 mb-12 backdrop-blur-xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
+            <span className="font-body text-[10px] sm:text-[11px] text-gold/80 uppercase tracking-[0.4em] font-black">Institutional Integrity Defined</span>
+          </motion.div>
+ 
+          {/* Headline - Masterclass Typography */}
+          <div className="mb-14 space-y-4">
+            <h1 className="font-display text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black text-off-white leading-[0.85] tracking-tighter uppercase">
+              <div className="flex flex-wrap justify-center gap-x-[0.1em] overflow-hidden pb-4">
+                {titleWords.map((word, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    transition={{ 
+                      duration: 1.2, 
+                      delay: 0.4 + (i * 0.08),
+                      ease: [0.22, 1, 0.36, 1]
+                    }}
+                    className="inline-block"
+                  >
+                    {word}
+                  </motion.span>
+                ))}
+              </div>
+            </h1>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.1 }}
+              className="relative py-2"
+            >
+              <span className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-glitter italic font-medium tracking-tight block">
+                We Find Them Before They Cost You.
+              </span>
+              <motion.div
+                className="absolute -bottom-2 left-1/3 right-1/3 h-[1px] bg-gold/20"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: 1.5, delay: 2 }}
+              />
+            </motion.div>
+          </div>
+ 
+          {/* Subheadline and Description - Precision Layout */}
+          <div className="max-w-3xl mx-auto mb-16 space-y-10">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.3 }}
+              className="font-body text-lg sm:text-xl md:text-2xl text-white/50 leading-relaxed font-light tracking-tight px-4"
+            >
+              The gap between where you are and where you should be?<br />
+              <span className="text-white font-medium italic">It has a name. We fix it.</span>
+            </motion.p>
+ 
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.5, delay: 1.6 }}
+              className="flex items-center justify-center gap-6"
+            >
+              <div className="h-px w-8 bg-gold/20" />
+              <p className="font-body text-[10px] sm:text-[11px] text-white/20 uppercase tracking-[0.5em] font-bold">
+                End-to-end legal and strategic advisory
+              </p>
+              <div className="h-px w-8 bg-gold/20" />
+            </motion.div>
+          </div>
+ 
+          {/* CTA Buttons - High End Interactive */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gold/30 bg-gold/10 mb-8 backdrop-blur-sm"
+            transition={{ duration: 1, delay: 1.8 }}
+            className="flex flex-col sm:flex-row gap-8 justify-center items-center px-6 sm:px-0"
           >
-            <Building2 className="w-4 h-4 text-gold" />
-            <span className="font-body text-sm text-gold">Corporate Excellence Redefined</span>
-          </motion.div>
-
-          {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-off-white leading-tight mb-6"
-          >
-            Navigate Corporate
-            <span className="block relative">
-              <span className="text-glitter">Complexity with Clarity</span>
-              {/* Animated underline */}
-              <motion.div
-                className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1, delay: 1 }}
-              />
-            </span>
-          </motion.h1>
-
-          {/* Subheadline */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="font-body text-lg md:text-xl text-off-white/70 max-w-2xl mx-auto mb-10"
-          >
-            End-to-end legal and strategic advisory for businesses, law firms, and CA practices. 
-            We bring expertise, execution, and accountability under one roof.
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-          >
-            <motion.div
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Button variant="gold" size="lg" asChild className="relative overflow-hidden group">
-                <Link href="/contact" className="flex items-center gap-2">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+              <Button variant="gold" size="lg" asChild className="relative w-full px-12 py-9 text-xs font-black uppercase tracking-[0.3em] overflow-hidden group shadow-[0_20px_50px_rgba(201,166,70,0.3)]">
+                <Link href="/contact" className="flex items-center gap-4 justify-center">
                   <span className="relative z-10">Schedule a Consultation</span>
-                  <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-                  {/* Shimmer */}
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
-                  />
+                  <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-3 transition-transform duration-500" />
                 </Link>
               </Button>
             </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.98 }}
+            
+            <Link 
+              href="/about" 
+              className="text-[10px] uppercase tracking-[0.4em] text-white/30 hover:text-gold transition-colors font-black border-b border-transparent hover:border-gold pb-1"
             >
-              <Button variant="gold-outline" size="lg" asChild className="backdrop-blur-sm">
-                <Link href="/about">Learn More</Link>
-              </Button>
-            </motion.div>
+              Learn More
+            </Link>
           </motion.div>
 
-          {/* Stats */}
+          {/* Enhanced Stats Grid */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="mt-20 grid grid-cols-1 sm:grid-cols-3 gap-8 md:gap-12 max-w-2xl mx-auto px-4"
+            transition={{ duration: 1, delay: 1.4 }}
+            className="mt-24 grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12 max-w-3xl mx-auto px-4"
           >
             {[
-              { icon: Users, value: "10+", label: "Clients Served" },
-              { icon: Shield, value: "100%", label: "Confidentiality" },
-              { icon: Building2, value: "6+", label: "Months Experience" },
+              { icon: Users, value: "10+", label: "Institutional Clients" },
+              { icon: Shield, value: "100%", label: "Strict Neutrality" },
+              { icon: Building2, value: "$100 Million +", label: "Transaction Advised" },
             ].map((stat, index) => (
               <motion.div 
                 key={index} 
-                className="text-center group"
-                whileHover={{ y: -5 }}
+                className={cn(
+                  "text-center group relative p-4 rounded-2xl transition-all duration-500 hover:bg-white/5",
+                  index === 2 && "col-span-2 sm:col-span-1"
+                )}
+                whileHover={{ y: -8 }}
               >
-                <motion.div
-                  className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gold/10 flex items-center justify-center"
-                  whileHover={{ 
-                    scale: 1.1, 
-                    boxShadow: "0 0 30px hsla(42, 52%, 54%, 0.3)",
-                  }}
-                >
+                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gold/10 flex items-center justify-center border border-gold/20 shadow-lg group-hover:bg-gold/20 transition-all">
                   <stat.icon className="w-6 h-6 text-gold" />
-                </motion.div>
-                <div className="font-display text-2xl md:text-3xl font-bold text-off-white group-hover:text-gold transition-colors duration-300">
+                </div>
+                <div className="font-display text-2xl sm:text-3xl font-black text-off-white mb-1 tracking-tight">
                   {stat.value}
                 </div>
-                <div className="font-body text-sm text-off-white/50">{stat.label}</div>
+                <div className="font-body text-[10px] uppercase tracking-[0.2em] text-white/40 font-bold">{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Scroll Indicator */}
+      {/* Fix: Moved Scroll Indicator deeper and hidden on small mobiles to avoid overlap */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        style={{ opacity }}
+        className="absolute bottom-12 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-3"
       >
+        <span className="text-[10px] uppercase tracking-[0.4em] text-white/20 font-black">Scroll</span>
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 rounded-full border-2 border-gold/50 flex items-start justify-center p-2"
+          animate={{ y: [0, 12, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-[30px] h-[50px] rounded-full border-2 border-white/10 flex items-start justify-center p-2 backdrop-blur-sm"
         >
           <motion.div 
-            className="w-1 h-2 bg-gold rounded-full"
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            className="w-1.5 h-3 bg-gold rounded-full shadow-[0_0_10px_rgba(201,166,70,0.5)]"
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
           />
         </motion.div>
       </motion.div>
