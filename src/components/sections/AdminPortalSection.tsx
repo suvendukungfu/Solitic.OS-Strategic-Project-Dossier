@@ -35,7 +35,7 @@ export function AdminPortalSection() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100px] pointer-events-none" />
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:100px] pointer-events-none" />
 
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-[60]">
         <div className="grid lg:grid-cols-2 gap-24 items-center">
           {/* Left Content */}
           <div className="space-y-12">
