@@ -139,7 +139,7 @@ export function ServicesSection() {
         }}
       />
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-[60]">
         <AnimatedSection className="text-center mb-16">
           <span className="font-body text-sm font-medium text-gold uppercase tracking-wider">
             Our Services
@@ -170,7 +170,7 @@ export function ServicesSection() {
           </p>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {services.map((service, index) => (
             <AnimatedSection key={index} delay={index * 0.1}>
               <motion.div 
