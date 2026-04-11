@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"; // rebuild trigger
 import { BlogListingUI } from "@/components/blog/BlogListingUI";
 import { Metadata } from "next";
 import { absoluteUrl, siteConfig } from "@/lib/site";
@@ -31,10 +31,17 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogListing() {
-  const posts = await prisma.post.findMany({
-    where: { status: "PUBLISHED" },
-    orderBy: { createdAt: "desc" },
-  });
+  let posts: any[] = [];
+  try {
+    const dbPosts = await prisma.post.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { createdAt: "desc" },
+    });
+    posts = dbPosts || [];
+  } catch (error) {
+    console.error("Critical: Prisma database fetch failed. Falling back to mockup data.", error);
+    posts = [];
+  }
 
   return <BlogListingUI posts={posts} />;
 }
