@@ -18,6 +18,7 @@ export const siteConfig = {
   ),
   email: 'contact@solitic.in',
   phone: '+91-9760825111',
+  instagram: 'https://www.instagram.com/solitic.consulting?igsh=MW85OXBhbnh6anlpOQ%3D%3D&utm_source=qr',
   locale: 'en_IN',
 };
 
