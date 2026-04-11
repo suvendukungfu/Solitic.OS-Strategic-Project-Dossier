@@ -47,14 +47,14 @@ export function ExpectedOutcomesSection() {
   return (
     <section className="relative py-24 bg-charcoal overflow-hidden">
       {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-[0.03]">
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 2px 2px, hsl(42, 52%, 54%) 1px, transparent 0)`,
           backgroundSize: "40px 40px",
         }} />
       </div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-6 relative z-[60]">
         <AnimatedSection className="text-center mb-16">
           <span className="font-body text-sm font-medium text-gold uppercase tracking-wider">
             Results You Can Expect
@@ -89,42 +89,44 @@ export function ExpectedOutcomesSection() {
           </p>
         </AnimatedSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {outcomes.map((outcome, index) => (
-            <AnimatedSection key={index} delay={index * 0.1}>
+            <AnimatedSection key={index} delay={index * 0.08}>
               <motion.div
-                className="group relative p-6 rounded-xl border border-off-white/10 bg-off-white/5 overflow-hidden"
-                whileHover={{ 
-                  borderColor: "hsla(42, 52%, 54%, 0.5)",
-                  y: -4,
-                }}
-                transition={{ duration: 0.3 }}
+                className="group relative h-full flex flex-col p-6 rounded-2xl border border-off-white/[0.08] overflow-hidden
+                           bg-gradient-to-br from-off-white/[0.06] to-off-white/[0.02]
+                           backdrop-blur-sm
+                           hover:border-gold/30
+                           hover:shadow-[0_8px_32px_-8px_hsla(42,52%,54%,0.15)]
+                           transition-all duration-500 ease-out"
+                whileHover={{ y: -4, scale: 1.02 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 {/* Shimmer on hover */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-                />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gold/[0.06] to-transparent
+                                -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
                 
-                <div className="relative z-10 flex items-start gap-4">
-                  <motion.div
-                    className="w-12 h-12 rounded-lg bg-gold/10 flex items-center justify-center flex-shrink-0"
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                  >
-                    <outcome.icon className="w-6 h-6 text-gold" />
-                  </motion.div>
+                {/* Content */}
+                <div className="relative z-10 flex items-start gap-4 flex-1">
+                  <div className="w-11 h-11 rounded-xl bg-gold/10 flex items-center justify-center flex-shrink-0 mt-0.5
+                                  group-hover:bg-gold/20 transition-colors duration-300">
+                    <outcome.icon className="w-5 h-5 text-gold" />
+                  </div>
                   
-                  <div>
-                    <h3 className="font-display text-lg font-semibold text-off-white mb-2 group-hover:text-gold transition-colors duration-300">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display text-lg font-semibold text-off-white mb-2
+                                   group-hover:text-gold transition-colors duration-300 leading-snug">
                       {outcome.title}
                     </h3>
-                    <p className="font-body text-sm text-off-white/60 leading-relaxed">
+                    <p className="font-body text-sm text-off-white/50 leading-relaxed">
                       {outcome.description}
                     </p>
                   </div>
                 </div>
                 
-                {/* Decorative corner */}
-                <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* Decorative corner glow */}
+                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gradient-to-tl from-gold/[0.05] to-transparent
+                                opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </motion.div>
             </AnimatedSection>
           ))}
