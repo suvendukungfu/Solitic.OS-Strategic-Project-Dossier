@@ -29,8 +29,8 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
                             'var(--font-sans)';
   
   return (
-    <article className="bg-[#050505] text-[#e0e0e0] min-h-screen py-32 font-sans selection:bg-gold/40">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-0 bg-[#0a0a0a] border border-white/5 shadow-[0_50px_200px_rgba(0,0,0,0.8)] rounded-[4rem] overflow-hidden">
+    <article className="bg-[#050505] text-[#e0e0e0] min-h-screen py-32 font-sans selection:bg-[#C2A46D] selection:text-black">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-0 bg-[#0c0c0c] border border-white/10 shadow-[0_50px_200px_rgba(0,0,0,0.8)] rounded-[4rem] overflow-hidden">
         
         {/* Left Sidebar - Data (Sticky) */}
         <div className="lg:col-span-3 border-r border-white/5 p-16 bg-black/20 hidden lg:block">
@@ -40,33 +40,33 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
               <p className="text-3xl font-display font-black tracking-tighter uppercase leading-none text-white/80">SOL-{post.id.slice(0, 8).toUpperCase()}</p>
             </div>
 
-            <div className="space-y-8 pt-12 border-t border-white/5">
+            <div className="space-y-8 pt-12 border-t border-white/10">
               <div className="flex items-center gap-4">
                  <Shield className="w-4 h-4 text-gold" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.5em]">Classification</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">Classification</span>
               </div>
               <p className="text-sm font-black uppercase tracking-widest bg-gold text-black px-6 py-3 rounded-xl inline-block">{post.category}</p>
             </div>
 
-            <div className="space-y-8 pt-12 border-t border-white/5">
+            <div className="space-y-8 pt-12 border-t border-white/10">
               <div className="flex items-center gap-4">
                  <Globe className="w-4 h-4 text-gold" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.5em]">Clearance</span>
+                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">Clearance</span>
               </div>
               <p className="text-xs font-bold italic tracking-wide text-white/40 leading-relaxed px-2">Verified Archive Protocol Level IV. Authorized by Principal Counsel.</p>
             </div>
 
             <div className="pt-24 opacity-20">
                <div className="p-10 border-2 border-dashed border-white/10 rounded-[2.5rem] text-center">
-                  <Lock className="w-8 h-8 mx-auto mb-6" />
-                  <span className="text-[8px] font-black uppercase tracking-[0.6em] leading-loose">Institutional <br/> Confidentiality</span>
+                  <Lock className="w-8 h-8 mx-auto mb-6 text-white" />
+                  <span className="text-[8px] font-black uppercase tracking-[0.6em] leading-loose text-white">Institutional <br/> Confidentiality</span>
                </div>
             </div>
           </div>
         </div>
 
         {/* Main Content Area */}
-        <div className="lg:col-span-9 p-8 md:p-20 lg:p-32">
+        <div className="lg:col-span-9 p-8 md:p-20 lg:p-32 bg-[#0c0c0c]">
           <header className="mb-32 space-y-12">
             <div className="flex items-center gap-6">
                <div className="w-24 h-px bg-gold" />
@@ -80,7 +80,7 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
               {post.title}
             </h1>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-white/40 italic">
+            <div className="grid grid-cols-2 md:md:grid-cols-4 gap-8 pt-12 border-t border-white/10 text-[10px] font-black uppercase tracking-[0.4em] text-white/40 italic">
                <div className="flex flex-col gap-1">
                  <span className="opacity-40">Authority</span>
                  <span className="text-white opacity-100">{post.author || "Counsel"}</span>
@@ -101,7 +101,7 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
           </header>
 
           {post.coverImage && (
-            <figure className="mb-32 rounded-[2.5rem] overflow-hidden border border-white/5 bg-black p-6 shadow-4xl group">
+            <figure className="mb-32 rounded-[2.5rem] overflow-hidden border border-white/10 bg-black p-6 shadow-4xl group">
               <img 
                 src={post.coverImage} 
                 alt={String(post.title)} 
@@ -126,13 +126,14 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                {(relatedPosts || []).slice(0, 4).map(r => (
-                 <Link href={`/blog/${r.slug}`} key={r.id} className="group p-10 border border-white/5 rounded-3xl hover:bg-white/[0.03] transition-all">
-                    <div className="flex items-center gap-4 mb-6">
+                 <Link href={`/blog/${r.slug}`} key={r.id} className="group p-10 border border-white/10 rounded-3xl bg-white/[0.03] backdrop-blur-[6px] hover:bg-neutral-900/40 transition-all relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(194,164,109,0.08),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                    <div className="flex items-center gap-4 mb-6 z-10 relative">
                       <div className="w-10 h-10 rounded-xl bg-gold text-black flex items-center justify-center text-[10px] font-black italic">R</div>
                       <span className="text-[10px] text-gold font-black uppercase tracking-widest leading-none">{r.category}</span>
                     </div>
-                    <h5 className="text-2xl font-bold leading-tight text-white group-hover:text-gold transition-colors">{r.title}</h5>
-                    <div className="flex items-center gap-3 mt-8 text-white/20 group-hover:text-gold transition-all">
+                    <h5 className="text-2xl font-bold leading-tight text-white group-hover:text-gold transition-colors z-10 relative">{r.title}</h5>
+                    <div className="flex items-center gap-3 mt-8 text-white/20 group-hover:text-gold transition-all z-10 relative">
                       <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Access File</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                     </div>

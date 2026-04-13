@@ -26,13 +26,13 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
                             'var(--font-sans)';
 
   return (
-    <article className="bg-[#050505] text-[#e0e0e0] min-h-screen py-40 selection:bg-gold/20">
+    <article className="bg-[#050505] text-[#e0e0e0] min-h-screen py-40 selection:bg-[#C2A46D] selection:text-black">
       <div className="max-w-[750px] mx-auto px-6">
         <header className="mb-32 space-y-12">
           <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] opacity-30">
              <span className="text-gold">{post.category}</span>
              <span className="w-1 h-1 rounded-full bg-white/10" />
-             <span>{post.createdAt ? format(new Date(post.createdAt), "yyyy") : ""}</span>
+             <span className="text-white/40">{post.createdAt ? format(new Date(post.createdAt), "yyyy") : ""}</span>
           </div>
           
           <h1 className="text-5xl md:text-8xl font-display font-black leading-[1] tracking-tighter uppercase text-white">
@@ -66,8 +66,8 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
         </div>
 
         <footer className="mt-40 pt-20 border-t border-white/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.6em] opacity-20">
-          <span>Solitic Institutional Archive</span>
-          <span>End of File</span>
+          <span className="text-white">Solitic Institutional Archive</span>
+          <span className="text-white">End of File</span>
         </footer>
       </div>
 

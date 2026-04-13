@@ -30,7 +30,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
                             'var(--font-sans)';
 
   return (
-    <article className="bg-[#080808] text-white min-h-screen">
+    <article className="bg-[#050505] text-white min-h-screen selection:bg-[#C2A46D] selection:text-black">
       {/* 1. CINEMATIC HERO */}
       <section className="relative h-[100vh] w-full overflow-hidden flex flex-col justify-end pb-32">
         {post.coverImage && (
@@ -45,7 +45,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
               className="w-full h-full object-cover opacity-60 grayscale-[0.5] hover:grayscale-0 transition-all duration-[3s]" 
               alt={String(post.title)} 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#080808]/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
           </motion.div>
         )}
         
@@ -86,7 +86,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
         <div className="lg:col-span-8 space-y-32">
           {/* Intense Lead */}
           <div 
-            className="font-serif text-3xl md:text-5xl italic text-white/50 leading-snug max-w-4xl"
+            className="font-serif text-3xl md:text-5xl italic text-white/40 leading-snug max-w-4xl"
             dangerouslySetInnerHTML={{ __html: renderContent(post.excerpt) || '' }} 
           />
 
@@ -109,10 +109,11 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
         </div>
 
         <aside className="lg:col-span-4 sticky top-40 h-fit space-y-24 hidden lg:block">
-           <div className="bg-white/[0.03] p-16 rounded-[4rem] border border-white/10 relative overflow-hidden">
+           <div className="bg-[#0c0c0c] p-16 rounded-[4rem] border border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(194,164,109,0.08),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               <div className="absolute -top-20 -right-20 w-64 h-64 bg-gold/10 rounded-full blur-[100px]" />
               <h4 className="text-[11px] font-black uppercase tracking-[0.7em] text-gold mb-16 italic pb-6 border-b border-white/5">Sequence Archive</h4>
-              <div className="space-y-16">
+              <div className="space-y-16 z-10 relative">
                 {relatedPosts.slice(0, 3).map((rel) => (
                   <Link key={rel.id} href={`/blog/${rel.slug}`} className="group/item block space-y-6">
                       <p className="text-gold text-[10px] font-black uppercase tracking-widest">{rel.category}</p>

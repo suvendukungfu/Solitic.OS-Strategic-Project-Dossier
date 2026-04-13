@@ -49,19 +49,19 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-gold selection:text-charcoal font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-[#C2A46D] selection:text-black font-sans overflow-x-hidden">
       <Navbar />
       
       <main className="pt-24 pb-32">
         {/* 1. HERO (SOLITIC DIGEST) - REFINED MASTHEAD */}
-        <section className="mb-14">
+        <section className="mb-14 bg-[#050505]">
           <div className="max-w-7xl mx-auto px-6 text-center">
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <div className="py-2 border-y border-gold/20 flex justify-between items-center text-[8px] font-black uppercase tracking-[0.4em] text-white/40 mb-10 overflow-hidden whitespace-nowrap">
+              <div className="py-2 border-y border-white/10 flex justify-between items-center text-[8px] font-black uppercase tracking-[0.4em] text-white/40 mb-10 overflow-hidden whitespace-nowrap">
                  <span>Institutional Archive</span>
                  <span className="hidden md:inline">Global Edition • {format(new Date(), "MMMM yyyy")} • Solitic Strategy Unit</span>
                  <span>Ref: 00{filteredPosts.length} Archive Docs</span>
@@ -72,12 +72,12 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
                 <h1 className="font-display text-7xl md:text-[8rem] lg:text-[11rem] font-black leading-[0.75] tracking-tighter uppercase mb-2">
                   SOLITIC <span className="text-gold italic">DIGEST</span>
                 </h1>
-                <p className="text-white/40 font-serif italic text-xl md:text-2xl mt-4">
+                <p className="text-white/40 font-serif italic text-xl md:text-2xl mt-4 text-rgba(255,255,255,0.4)">
                   "Strategic Insights & Editorial Intelligence"
                 </p>
               </div>
 
-              <div className="pt-6 border-t border-gold/20" />
+              <div className="pt-6 border-t border-white/10" />
             </motion.div>
 
             {/* Category Strip - REFINED */}
@@ -112,8 +112,8 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
         </section>
 
         {/* 2. EDITORIAL GRID (20 / 55 / 25) */}
-        <section className="max-w-[1400px] mx-auto px-6 mb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 border-t border-white/5 pt-12">
+        <section className="max-w-[1400px] mx-auto px-6 mb-24 bg-[#0c0c0c] rounded-[4rem] border border-white/5 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 pt-4">
             
             {/* COLUMN 1: META (20%) */}
             <aside className="lg:col-span-2 hidden lg:block space-y-12">
@@ -199,7 +199,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
             {/* COLUMN 3: SIDEBAR (25%) */}
             <aside className="lg:col-span-3 space-y-20 lg:sticky lg:top-40 lg:h-fit">
               <div className="space-y-12">
-                <div className="pb-4 border-b border-gold/20">
+                <div className="pb-4 border-b border-white/10">
                    <h3 className="text-[10px] font-black uppercase tracking-[0.6em] text-white italic">Also in this Issue</h3>
                 </div>
                 <div className="space-y-12">
@@ -215,7 +215,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
                 </div>
               </div>
 
-              <div className="pt-16 border-t border-white/5 space-y-10">
+              <div className="pt-16 border-t border-white/10 space-y-10">
                 <div className="pb-4">
                    <h3 className="text-[10px] font-black uppercase tracking-[0.6em] text-white/20 italic">Trending Record</h3>
                 </div>
@@ -232,7 +232,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
               </div>
 
               {/* Newsletter Minimal Block */}
-              <div className="p-10 border border-gold/10 rounded-[3rem] bg-gradient-to-b from-white/[0.03] to-transparent space-y-8">
+              <div className="p-10 border border-white/5 rounded-[3rem] bg-gradient-to-b from-white/[0.03] to-transparent space-y-8">
                  <h4 className="text-xl font-display font-black italic text-white text-center">STRATEGIC DOSSIER</h4>
                  <div className="flex flex-col gap-3">
                    <input 
@@ -250,7 +250,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
         </section>
 
         {/* 3. ARCHIVE GRID (EQUAL CARDS) */}
-        <section className="max-w-[1400px] mx-auto px-6 border-t border-white/10 pt-16">
+        <section className="max-w-[1400px] mx-auto px-6 pt-16 border-t border-white/10 bg-[#050505]">
           <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-6">
             <h2 className="text-[12px] font-black uppercase tracking-[0.8em] text-gold italic">Historical Sequence</h2>
             <div className="w-full md:w-1/2 h-px bg-white/5" />
@@ -264,9 +264,12 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                className="group flex flex-col h-full border border-white/5 p-8 rounded-[3.5rem] bg-white/[0.01] hover:bg-white/[0.03] transition-all duration-500"
+                className="group flex flex-col h-full border border-white/[0.06] p-8 rounded-[3.5rem] bg-white/[0.03] backdrop-blur-[6px] hover:bg-neutral-900/40 transition-all duration-500 relative overflow-hidden"
               >
-                <Link href={`/blog/${post.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden rounded-[2.5rem] bg-black border border-white/5 group-hover:border-gold/20 mb-10 transition-all">
+                {/* Subtle Hover Glow */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(194,164,109,0.08),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+                <Link href={`/blog/${post.slug}`} className="block relative aspect-[16/10] w-full overflow-hidden rounded-[2.5rem] bg-black border border-white/5 group-hover:border-gold/20 mb-10 transition-all z-10">
                   {post.coverImage && (
                     <img 
                       src={post.coverImage} 
@@ -277,7 +280,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </Link>
 
-                <div className="flex-1 space-y-6 flex flex-col">
+                <div className="flex-1 space-y-6 flex flex-col z-10">
                   <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-widest text-white/20">
                     <span className="text-gold opacity-100">{post.category}</span>
                     <span className="w-0.5 h-0.5 rounded-full bg-white/10" />
@@ -288,7 +291,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
                       {post.title}
                     </h3>
                   </Link>
-                  <p className="text-lg text-white/30 leading-snug italic line-clamp-2 font-serif">
+                  <p className="text-lg text-white/40 leading-snug italic line-clamp-2 font-serif">
                     {renderPlainText(post.excerpt)}
                   </p>
                   
