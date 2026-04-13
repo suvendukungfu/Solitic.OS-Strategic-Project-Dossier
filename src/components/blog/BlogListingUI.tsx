@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { BlogCTA } from "./BlogCTA";
 import { useState, useEffect } from "react";
 import { MOCKUP_POSTS } from "@/lib/blog-data";
 import { renderPlainText } from "@/lib/tiptap";
@@ -49,7 +50,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-gold selection:text-charcoal font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background text-white selection:bg-[#C2A46D] selection:text-black font-sans overflow-x-hidden">
       <Navbar />
       
       <main className="pt-24 pb-32">
@@ -301,6 +302,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
             ))}
           </div>
         </section>
+        <BlogCTA />
       </main>
       
       <Footer />
