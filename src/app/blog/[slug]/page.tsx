@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import { MOCKUP_POSTS } from "@/lib/blog-data";
 import { renderPlainText } from "@/lib/tiptap";
+import { BlogPost } from "@/components/blog/types";
 
 import { Post } from "@prisma/client";
 
@@ -16,21 +17,20 @@ export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const session = await getServerSession(authOptions);
   
-  let post: Post | null = null;
+  let post: BlogPost | null = null;
   try {
     const dbPost = await prisma.post.findUnique({
       where: { slug: params.slug },
     });
-    post = dbPost;
+    post = dbPost as unknown as BlogPost | null;
   } catch (e) {
     console.error("Prisma error in metadata:", e);
   }
 
   // Fallback to mockup data
   if (!post) {
-    post = MOCKUP_POSTS.find(p => p.slug === params.slug);
+    post = MOCKUP_POSTS.find(p => p.slug === params.slug) as unknown as BlogPost | null;
   }
 
   if (!post) {
@@ -53,7 +53,7 @@ export async function generateMetadata(props: {
       description: plainExcerpt,
       images: imageUrl ? [imageUrl] : [],
       type: "article",
-      publishedTime: typeof post.createdAt === 'string' ? post.createdAt : post.createdAt.toISOString(),
+      publishedTime: typeof post.createdAt === 'string' ? post.createdAt : (post.createdAt as Date).toISOString(),
       tags: post.tags ? String(post.tags).split(",") : [],
     },
     twitter: {
@@ -69,19 +69,19 @@ export default async function BlogPostPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const params = await props.params;
-  let post: Post | null = null;
+  let post: BlogPost | null = null;
   try {
     const dbPost = await prisma.post.findUnique({
       where: { slug: params.slug },
     });
-    post = dbPost;
+    post = dbPost as unknown as BlogPost | null;
   } catch (e) {
     console.error("Prisma error in page body:", e);
   }
 
   // Fallback to mockup data
   if (!post) {
-    post = MOCKUP_POSTS.find(p => p.slug === params.slug);
+    post = MOCKUP_POSTS.find(p => p.slug === params.slug) as unknown as BlogPost | null;
   }
 
   if (!post) {
@@ -96,9 +96,9 @@ export default async function BlogPostPage(props: {
     }
   }
 
-  let relatedPosts: Post[] = [];
+  let relatedPosts: BlogPost[] = [];
   try {
-    relatedPosts = await prisma.post.findMany({
+    const dbRelated = await prisma.post.findMany({
       where: { 
         status: "PUBLISHED", 
         NOT: { id: post.id },
@@ -106,6 +106,7 @@ export default async function BlogPostPage(props: {
       take: 3,
       orderBy: { createdAt: "desc" },
     });
+    relatedPosts = dbRelated as unknown as BlogPost[];
   } catch (e) {
     relatedPosts = [];
   }
@@ -113,7 +114,7 @@ export default async function BlogPostPage(props: {
   // Combine with dummy related posts if DB empty or fetch fails
   const finalRelatedPosts = relatedPosts.length > 0 
     ? relatedPosts 
-    : MOCKUP_POSTS.filter(p => p.slug !== params.slug).slice(0, 3);
+    : (MOCKUP_POSTS.filter(p => p.slug !== params.slug).slice(0, 3) as unknown as BlogPost[]);
 
   return <BlogPostUI post={post} relatedPosts={finalRelatedPosts} />;
 }
