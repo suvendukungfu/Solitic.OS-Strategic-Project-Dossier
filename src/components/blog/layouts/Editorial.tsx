@@ -8,115 +8,136 @@ import { LayoutProps } from "../types";
 import { JSONContent } from "@tiptap/react";
 import Link from "next/link";
 
-export default function EditorialLayout({ post, relatedPosts }: LayoutProps) {
+export default function EditorialLayout({ post, relatedPosts, contentOverride }: LayoutProps) {
   const tags = post.tags ? String(post.tags).split(",").filter(Boolean) : [];
   
   return (
-    <article className="bg-[#fcfcfc] text-black min-h-screen font-serif py-20 px-4 md:px-10">
-      <div className="max-w-6xl mx-auto border-y-4 border-black py-12 mb-16 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center text-xs font-black uppercase tracking-[0.4em] mb-12">
-          <span>Vol. {post.id.slice(0, 3).toUpperCase()} / No. {post.id.slice(3, 6).toUpperCase()}</span>
-          <span className="text-2xl font-display font-black tracking-tighter">THE SOLITIC CHRONICLE</span>
-          <span>{format(new Date(post.createdAt), "EEEE, MMMM d, yyyy")}</span>
+    <article className="bg-[#fcfcfc] text-black min-h-screen font-serif py-12 px-4 md:px-0">
+      <div className="max-w-6xl mx-auto border-t-[6px] border-b-2 border-black py-4 mb-12 flex flex-col md:flex-row justify-between items-center px-4">
+        <div className="text-[10px] font-black uppercase tracking-widest border-r border-black/20 pr-6 mr-6 hidden md:block">
+          Established 2026<br/>Solitic Institutional Archive
         </div>
-
-        <motion.h1 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-5xl md:text-8xl font-display font-black text-center mb-8 leading-[0.9] tracking-tighter uppercase"
-        >
-          {post.title}
-        </motion.h1>
-
-        <div className="max-w-4xl mx-auto text-center border-t border-black/10 pt-8 mt-8">
-           <p className="text-xl md:text-2xl font-serif italic text-black/60 leading-relaxed" 
-              dangerouslySetInnerHTML={{ __html: renderContent(post.excerpt) }} 
-           />
-           <div className="mt-6 flex items-center justify-center gap-4 text-[10px] font-black uppercase tracking-widest bg-black text-white px-6 py-2 w-fit mx-auto">
-             Reported By {post.author || "The Solitic Core"}
-           </div>
+        <div className="flex flex-col items-center">
+          <span className="text-xl md:text-3xl font-display font-black tracking-[-0.05em] uppercase leading-none">THE SOLITIC CHRONICLE</span>
+          <div className="w-full h-px bg-black mt-1" />
+          <div className="w-full h-px bg-black mt-0.5" />
+        </div>
+        <div className="text-[10px] font-black uppercase tracking-widest text-right pl-6 ml-6 hidden md:block border-l border-black/20">
+          Price: Strategic Intelligence<br/>Vol. {post.id.slice(0, 4).toUpperCase()}
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto">
-        {post.coverImage && (
-          <div className="mb-16 border-b border-black pb-16">
-            <img
-              src={post.coverImage ?? undefined}
-              alt={post.title}
-              className="w-full h-auto object-contain filter grayscale border-4 border-black shadow-[15px_15px_0px_0px_rgba(0,0,0,0.1)]"
-            />
-            <p className="mt-4 text-[9px] uppercase tracking-widest text-black/40 text-center italic font-sans font-black">
-              FIG. 01: ARCHIVE RECONSTRUCTION / {post.slug.toUpperCase()}
-            </p>
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-6xl md:text-[10rem] font-display font-black leading-[0.85] tracking-tighter uppercase mb-8"
+          >
+            {post.title}
+          </motion.h1>
+          
+          <div className="flex flex-wrap items-center justify-center gap-6 py-4 border-y border-black/10 font-sans text-[10px] font-black uppercase tracking-[0.4em]">
+             <span>By {post.author || "Principal Counsel"}</span>
+             <span className="w-1.5 h-1.5 rounded-full bg-black/20" />
+             <span>{format(new Date(post.createdAt), "MMMM yyyy")}</span>
+             <span className="w-1.5 h-1.5 rounded-full bg-black/20" />
+             <span className="italic">{post.category}</span>
           </div>
-        )}
-
-        {/* Multi-column Body */}
-        <div className="md:columns-2 lg:columns-3 gap-12 text-black leading-relaxed text-justify hyphens-auto prose-editorial-black drop-cap-black">
-          <div 
-            className="editorial-content"
-            dangerouslySetInnerHTML={{ __html: renderContent(post.content as unknown as JSONContent) }} 
-          />
         </div>
 
-        <div className="mt-20 pt-10 border-t-2 border-black flex flex-wrap gap-3 font-sans">
-          {tags.map((tag: string) => (
-            <span key={tag} className="px-3 py-1 bg-black text-white text-[9px] font-black uppercase tracking-widest">
-              {tag.trim()}
-            </span>
-          ))}
-        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
+          <div className="lg:col-span-8">
+            {post.coverImage && (
+              <figure className="mb-12 border-4 border-black p-1 bg-black/5">
+                <img
+                  src={post.coverImage}
+                  alt={post.title}
+                  className="w-full grayscale contrast-125 brightness-90 hover:grayscale-0 transition-all duration-1000 object-contain max-h-[600px] bg-white"
+                />
+                <figcaption className="p-4 text-[9px] uppercase tracking-widest leading-relaxed font-sans font-black bg-white border-t-2 border-black">
+                  [DOCUMENTARY EVIDENCE] / {post.slug.toUpperCase()} / INSTITUTIONAL CLEARANCE GRANTED
+                </figcaption>
+              </figure>
+            )}
 
-        {/* Newspaper Footer */}
-        <div className="mt-32 grid grid-cols-1 md:columns-3 gap-12 border-t-4 border-black pt-12 opacity-80">
-          {relatedPosts.slice(0, 3).map((related) => (
-            <div key={related.id} className="space-y-4 font-serif">
-              <span className="text-[10px] font-black uppercase tracking-widest text-black/40 border-b border-black/10 pb-2 block underline">Related Brief</span>
-              <h3 className="text-xl font-bold leading-tight hover:underline cursor-pointer">{related.title}</h3>
-              <p className="text-sm text-black/60 line-clamp-3 leading-relaxed">{renderContent(related.excerpt as unknown as JSONContent).replace(/<[^>]*>/g, '')}</p>
+            <div className="md:columns-2 gap-12 text-black editorial-prose drop-cap-newspaper">
+               <div 
+                 className="editorial-body text-justify hyphens-auto"
+               >
+                 {contentOverride || <div dangerouslySetInnerHTML={{ __html: renderContent(post.content as unknown as JSONContent) }} />}
+               </div>
             </div>
-          ))}
+          </div>
+
+          <aside className="lg:col-span-4 space-y-12 border-l border-black/10 pl-12 hidden lg:block">
+            <div className="space-y-6">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.5em] border-b-4 border-black pb-2">Abstract Summary</h4>
+              <p className="font-serif italic text-lg leading-relaxed text-black/60" 
+                 dangerouslySetInnerHTML={{ __html: renderContent(post.excerpt as unknown as JSONContent) }} 
+              />
+            </div>
+
+            <div className="bg-black text-white p-8 space-y-4">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50">Strategic Tags</h4>
+              <div className="flex flex-wrap gap-2">
+                {tags.map(t => (
+                  <span key={t} className="text-[9px] font-black uppercase border border-white/20 px-2 py-1">{t}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-8">
+               <h4 className="text-[10px] font-black uppercase tracking-[0.5em] border-b-4 border-black pb-2">In This Issue</h4>
+               {relatedPosts.map(r => (
+                 <Link href={`/blog/${r.slug}`} key={r.id} className="block group">
+                    <p className="text-[10px] font-black uppercase text-gold mb-2">Docket: {r.category}</p>
+                    <h5 className="text-xl font-bold leading-none group-hover:underline mb-2">{r.title}</h5>
+                    <div className="w-full h-px bg-black/10" />
+                 </Link>
+               ))}
+            </div>
+          </aside>
         </div>
       </div>
 
       <style jsx global>{`
-        .prose-editorial-black p {
+        .editorial-prose p {
           margin-bottom: 1.5rem;
-          font-size: 1.1rem;
+          font-family: var(--font-serif);
+          font-size: 1.15rem;
+          line-height: 1.6;
         }
-        .drop-cap-black p:first-of-type::first-letter {
+        .drop-cap-newspaper p:first-of-type::first-letter {
           float: left;
           font-size: 5rem;
-          line-height: 4rem;
-          padding-top: 4px;
-          padding-right: 8px;
-          padding-left: 3px;
+          line-height: 1;
+          padding: 0.1em 0.1em 0 0;
           font-family: var(--font-display);
           font-weight: 900;
-          color: black;
         }
-        .editorial-content h2, .editorial-content h3 {
-           column-span: all;
-           font-family: var(--font-display);
-           font-weight: 900;
-           text-transform: uppercase;
-           letter-spacing: -0.05em;
-           margin-top: 2rem;
-           margin-bottom: 1.5rem;
-           border-bottom: 2px solid black;
-           padding-bottom: 0.5rem;
+        .editorial-body h2, .editorial-body h3 {
+          font-family: var(--font-display);
+          font-weight: 900;
+          text-transform: uppercase;
+          margin: 2rem 0 1rem 0;
+          border-bottom: 1px solid black;
+          padding-bottom: 0.5rem;
         }
-        .editorial-content h2 { font-size: 2rem; }
-        .editorial-content h3 { font-size: 1.5rem; }
-        .editorial-content img {
-           column-span: all;
-           width: 100% !important;
-           height: auto !important;
-           object-fit: contain !important;
-           margin: 2rem 0;
-           border: 2px solid black;
+        .editorial-body h2 { font-size: 1.8rem; }
+        .editorial-body h3 { font-size: 1.4rem; }
+        .editorial-body img {
+          width: 100% !important;
+          height: auto !important;
+          object-fit: contain !important;
+          border: 1px solid black;
+          margin: 2rem 0;
         }
+        .editorial-body ul, .editorial-body ol {
+          margin-bottom: 1.5rem;
+          padding-left: 1.5rem;
+        }
+        .editorial-body li { margin-bottom: 0.5rem; }
       `}</style>
     </article>
   );

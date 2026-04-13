@@ -8,7 +8,7 @@ import { JSONContent } from "@tiptap/react";
 import { format } from "date-fns";
 import { LayoutProps } from "../types";
 
-export default function MinimalLayout({ post, relatedPosts }: LayoutProps) {
+export default function MinimalLayout({ post, relatedPosts, contentOverride }: LayoutProps) {
   const tags = post.tags ? String(post.tags).split(",").filter(Boolean) : [];
   
   return (
@@ -53,7 +53,7 @@ export default function MinimalLayout({ post, relatedPosts }: LayoutProps) {
         </header>
 
         <div className="prose prose-lg prose-black max-w-none minimal-content">
-          <div dangerouslySetInnerHTML={{ __html: renderContent(post.content as unknown as JSONContent) }} />
+          {contentOverride || <div dangerouslySetInnerHTML={{ __html: renderContent(post.content as unknown as JSONContent) }} />}
         </div>
 
         <footer className="mt-40 pt-20 border-t border-black/5 space-y-32">
