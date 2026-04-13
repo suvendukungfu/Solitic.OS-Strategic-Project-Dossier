@@ -101,7 +101,11 @@ export default function EditorialLayout({ post, relatedPosts, contentOverride }:
               style={{ fontFamily: selectedFontFamily }}
             >
                <div className="max-w-[800px] mx-auto">
-                 {contentOverride || (
+                 {contentOverride ? (
+                   <div className="editorial-body text-left">
+                     {contentOverride}
+                   </div>
+                 ) : (
                    <div 
                     className="editorial-body text-justify hyphens-auto drop-cap-newspaper"
                     dangerouslySetInnerHTML={{ __html: renderContent(post.content) || "" }} 
