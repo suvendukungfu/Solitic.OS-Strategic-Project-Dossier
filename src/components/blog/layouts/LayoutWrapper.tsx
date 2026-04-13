@@ -27,7 +27,7 @@ export function LayoutWrapper({
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen selection:bg-[#C2A46D] selection:text-black font-sans overflow-x-hidden pt-20 bg-[#050505]">
+    <div className="min-h-screen selection:bg-gold selection:text-charcoal font-sans overflow-x-hidden pt-20">
       <Navbar />
 
       {/* Reading Progress */}

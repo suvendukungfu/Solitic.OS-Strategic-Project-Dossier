@@ -30,9 +30,9 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
                             'var(--font-sans)';
 
   return (
-    <article className="bg-[#050505] text-[#e0e0e0] min-h-screen selection:bg-[#C2A46D] selection:text-black">
+    <article className="bg-[#050505] text-[#e0e0e0] min-h-screen selection:bg-gold/30">
       {/* 1. ATMOSPHERIC HERO */}
-      <section className="relative min-h-[100vh] w-full flex items-center justify-center overflow-hidden py-40 bg-[#050505]">
+      <section className="relative min-h-[100vh] w-full flex items-center justify-center overflow-hidden py-40">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-radial-gradient from-gold/10 via-transparent to-transparent opacity-40 blur-[150px]" />
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
@@ -96,7 +96,7 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
             className="w-full max-w-[1200px] mb-40 relative group"
           >
             <div className="absolute -inset-4 bg-gold/5 rounded-[4rem] blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-1000" />
-            <div className="relative overflow-hidden rounded-[3rem] border border-white/10 bg-[#0c0c0c] p-4">
+            <div className="relative overflow-hidden rounded-[3rem] border border-white/5 bg-[#0a0a0a] p-4">
                <img 
                  src={post.coverImage} 
                  alt={String(post.title)} 
@@ -127,7 +127,7 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
             </div>
 
             {/* Tags Strip */}
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-32 border-t border-white/10">
+            <div className="flex flex-wrap items-center justify-center gap-6 pt-32 border-t border-white/5">
                 {tags.map(t => (
                   <span key={t} className="text-[10px] font-black uppercase tracking-[0.8em] text-white/20 hover:text-gold transition-colors cursor-default">
                     #{t}
