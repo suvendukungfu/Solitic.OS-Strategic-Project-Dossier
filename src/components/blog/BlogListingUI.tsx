@@ -16,6 +16,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useState, useEffect } from "react";
 import { MOCKUP_POSTS } from "@/lib/blog-data";
+import { renderPlainText } from "@/lib/tiptap";
 
 const categories = [
   "Corporate Law",
@@ -44,9 +45,9 @@ export function BlogListingUI({ posts: initialPosts }: { posts: any[] }) {
   // Use Database posts if available, otherwise fall back to Mock Data
   const posts = initialPosts && initialPosts.length > 0 ? initialPosts : MOCKUP_POSTS; 
   
-  const featuredPost = posts[0];
-  const secondaryPosts = posts.slice(4, 7); // Analysis grid
-  const sidebarPosts = posts.slice(1, 4); // Also in this issue
+  const featuredPost = posts.find(p => p.featured) || posts[0];
+  const secondaryPosts = posts.filter(p => !p.featured).slice(0, 3); // Analysis grid
+  const sidebarPosts = posts.filter(p => p.trending).slice(0, 3); // Also in this issue
   const remainingPosts = posts.slice(7);
   
   const editionDate = "Friday, April 18, 2026";
@@ -205,29 +206,35 @@ export function BlogListingUI({ posts: initialPosts }: { posts: any[] }) {
                     >
                       <div className="space-y-6 mb-10">
                         <div className="flex items-center gap-4">
-                          <span className="text-[10px] font-black text-gold uppercase tracking-[0.4em] border-b border-gold/50 pb-1">Cover Story · Corporate Advisory</span>
+                          <span className="text-[10px] font-black text-gold uppercase tracking-[0.4em] border-b border-gold/50 pb-1">Cover Story · {featuredPost.category}</span>
                           <span className="text-[10px] text-white/30 uppercase tracking-widest">{format(new Date(featuredPost.createdAt), "MMM d, yyyy")}</span>
                         </div>
                         
                         <Link href={`/blog/${featuredPost.slug}`}>
-                          <h2 className="font-display text-5xl md:text-7xl font-bold leading-[0.95] tracking-tight group-hover:text-gold transition-colors duration-500 text-white">
+                          <h2 className="font-display text-5xl md:text-7xl font-bold leading-[0.9] tracking-tight group-hover:text-gold transition-colors duration-500 text-white decoration-gold/20 decoration-[0.5px] underline-offset-[12px] hover:underline">
                             {featuredPost.title}
                           </h2>
                         </Link>
                       </div>
 
-                      <Link href={`/blog/${featuredPost.slug}`} className="block overflow-hidden relative mb-10">
-                        <img 
-                          src={featuredPost.coverImage || "/images/placeholder.jpg"} 
-                          alt={featuredPost.title}
-                          className="w-full aspect-[4/3] object-cover filter grayscale hover:grayscale-0 transition-all duration-[2000ms] group-hover:scale-105"
-                        />
+                      <Link href={`/blog/${featuredPost.slug}`} className="block overflow-hidden relative mb-10 bg-white/5">
+                        {featuredPost.coverImage ? (
+                          <img 
+                            src={featuredPost.coverImage} 
+                            alt={featuredPost.title}
+                            className="w-full aspect-[4/3] object-cover filter grayscale hover:grayscale-0 transition-all duration-[2000ms] group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full aspect-[4/3] flex items-center justify-center text-white/10 font-display italic text-2xl">
+                            Visual Intelligence Restricted
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-colors duration-1000" />
                       </Link>
                       
                       <div className="space-y-8 flex-1">
-                        <div className="drop-cap font-body text-xl text-white/60 leading-relaxed italic">
-                          <p>{featuredPost.excerpt}</p>
+                        <div className="drop-cap font-body text-xl md:text-2xl text-white/70 leading-relaxed italic border-l-2 border-gold/20 pl-6 mb-12">
+                          <p>{renderPlainText(featuredPost.excerpt)}</p>
                         </div>
 
                         {/* Highlight Quote Integrated in Lead Column */}
@@ -267,17 +274,18 @@ export function BlogListingUI({ posts: initialPosts }: { posts: any[] }) {
                           transition={{ delay: idx * 0.1 }}
                           className="group"
                         >
-                          <Link href={`/blog/${post.slug}`} className="block space-y-4">
-                            <span className="text-[9px] font-black text-gold/60 uppercase tracking-[0.3em]">{post.tags}</span>
-                            <h3 className="font-display text-3xl font-bold leading-tight group-hover:text-gold transition-colors text-white">
+                          <Link href={`/blog/${post.slug}`} className="block space-y-4 group/card">
+                            <span className="text-[9px] font-black text-gold/60 uppercase tracking-[0.3em]">{post.category}</span>
+                            <h3 className="font-display text-3xl font-bold leading-tight group-hover/card:text-gold transition-colors text-white relative">
                               {post.title}
+                              <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold transition-all duration-500 group-hover/card:w-full" />
                             </h3>
-                            <p className="font-body text-sm text-white/40 line-clamp-3 leading-relaxed italic">
-                              {post.excerpt}
+                            <p className="font-body text-sm text-white/50 line-clamp-3 leading-relaxed italic group-hover/card:text-white/80 transition-colors">
+                              {renderPlainText(post.excerpt)}
                             </p>
-                            <div className="flex items-center gap-2 text-[9px] text-white/20 uppercase tracking-widest pt-2">
-                              <span>{format(new Date(post.createdAt), "MMM d")}</span>
-                              <span>•</span>
+                            <div className="flex items-center gap-2 text-[9px] text-white/30 uppercase tracking-widest pt-2">
+                              <span>{format(new Date(post.createdAt), "MMM d, yyyy")}</span>
+                              <span className="w-1 h-1 rounded-full bg-gold/50" />
                               <span>{post.readingTime} min read</span>
                             </div>
                           </Link>
@@ -322,12 +330,12 @@ export function BlogListingUI({ posts: initialPosts }: { posts: any[] }) {
                           viewport={{ once: true }}
                           transition={{ delay: idx * 0.1 }}
                         >
-                          <Link href={`/blog/${post.slug}`} className="group block space-y-3">
-                            <span className="text-[9px] font-black text-gold/40 uppercase tracking-widest">{post.tags}</span>
-                            <h4 className="font-display text-base font-bold text-white group-hover:text-gold transition-colors leading-snug">
+                          <Link href={`/blog/${post.slug}`} className="group/item block space-y-3 p-4 hover:bg-white/[0.02] border-transparent border transition-all hover:border-white/10">
+                            <span className="text-[9px] font-black text-gold/40 uppercase tracking-widest">{post.category}</span>
+                            <h4 className="font-display text-base font-bold text-white group-hover/item:text-gold transition-colors leading-snug">
                               {post.title}
                             </h4>
-                            <p className="text-[10px] text-white/30 leading-relaxed italic line-clamp-2">{post.excerpt}</p>
+                            <p className="text-[10px] text-white/30 leading-relaxed italic line-clamp-2">{renderPlainText(post.excerpt)}</p>
                           </Link>
                         </motion.div>
                       ))}
