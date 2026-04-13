@@ -49,6 +49,7 @@ export const Color = Extension.create({
       unsetColor: () => ({ chain }: any) => {
         return chain().setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any;
   },
 });
