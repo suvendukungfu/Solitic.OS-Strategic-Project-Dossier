@@ -191,3 +191,10 @@
 .glass-morphism {
   @apply bg-background/80 backdrop-blur-md border border-white/10;
 }
+
+/* Institutional Font System Utilities */
+.font-poppins { font-family: var(--font-poppins), sans-serif !important; }
+.font-merriweather { font-family: var(--font-merriweather), serif !important; }
+.font-mono-fira { font-family: var(--font-mono-fira), monospace !important; }
+.font-display { font-family: var(--font-display), serif !important; }
+.font-sans { font-family: var(--font-sans), sans-serif !important; }
