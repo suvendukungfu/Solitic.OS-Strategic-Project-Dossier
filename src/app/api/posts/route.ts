@@ -36,6 +36,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+    console.log("POST /api/posts - INCOMING BODY:", JSON.stringify(body, null, 2));
     const validatedData = postSchema.parse(body);
     
     const { id, ...postData } = validatedData;
@@ -80,7 +81,7 @@ export async function POST(req: Request) {
     
     return apiSuccess(post, 201);
   } catch (error) {
-    console.error("Strategy Entry Error:", error);
+    console.error("POST /api/posts - FATAL ERROR:", error);
     return handleApiError(error);
   }
 }

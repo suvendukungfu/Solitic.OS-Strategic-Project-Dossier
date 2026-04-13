@@ -55,6 +55,7 @@ export async function PUT(
   try {
     const resolvedParams = await params;
     const body = await req.json();
+    console.log(`PUT /api/posts/byId/${resolvedParams.id} - INCOMING BODY:`, JSON.stringify(body, null, 2));
     const validatedData = postSchema.parse(body);
     
     // Explicitly destructure to avoid passing 'id' to prisma and to calculate metrics
@@ -112,7 +113,7 @@ export async function PUT(
     
     return NextResponse.json(transformedPost);
   } catch (error) {
-    console.error("Institutional Update Error:", error);
+    console.error(`PUT /api/posts/byId/${resolvedParams.id} - FATAL ERROR:`, error);
     return NextResponse.json({ message: "Manuscript synchronization failed" }, { status: 400 });
   }
 }
