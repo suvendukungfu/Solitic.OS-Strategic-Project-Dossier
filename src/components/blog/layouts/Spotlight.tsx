@@ -60,7 +60,7 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
             <div className="flex flex-wrap items-center justify-center gap-12 pt-16 border-t border-white/5 mx-auto w-fit">
                <div className="flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 italic">
                   <User className="w-4 h-4 text-gold" />
-                  {post.author || "Principal Counsel"}
+                  {post.author || "Solitic Consulting"}
                </div>
                <div className="w-1.5 h-1.5 rounded-full bg-gold/40" />
                <div className="flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.4em] text-white/40 italic">
@@ -144,7 +144,7 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
                 </div>
                 <div>
                    <p className="text-[10px] font-black uppercase tracking-widest text-gold mb-1">Narrator</p>
-                   <p className="text-xl font-display font-black text-white italic leading-none">{post.author || "Counsel"}</p>
+                   <p className="text-xl font-display font-black text-white italic leading-none">{post.author || "Solitic Consulting"}</p>
                 </div>
              </div>
 

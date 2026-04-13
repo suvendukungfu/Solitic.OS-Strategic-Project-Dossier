@@ -67,7 +67,7 @@ export default function EditorialLayout({ post, relatedPosts, contentOverride }:
           </motion.h1>
           
           <div className="flex flex-wrap items-center justify-center gap-10 py-8 border-y border-black/10 font-sans text-[11px] font-black uppercase tracking-[0.4em]">
-             <span className="text-gold">By {post.author || "Principal Counsel"}</span>
+             <span className="text-gold">By {post.author || "Solitic Consulting"}</span>
              <span className="w-1.5 h-1.5 rounded-full bg-black/10" />
              <span>{post.createdAt ? format(new Date(post.createdAt), "MMMM d, yyyy") : ""}</span>
              <span className="w-1.5 h-1.5 rounded-full bg-black/10" />

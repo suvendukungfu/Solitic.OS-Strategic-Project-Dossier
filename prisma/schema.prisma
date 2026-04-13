@@ -15,7 +15,7 @@ model Post {
   title       String
   slug        String   @unique
   category    String   // Corporate Law, Taxation, etc.
-  author      String   @default("Golden Dynasty Counsel")
+  author      String   @default("Solitic Consulting")
   excerpt     String?
   content     Json     // Tiptap JSON content
   tags        String?  // classification labels

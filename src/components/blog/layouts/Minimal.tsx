@@ -40,7 +40,7 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
           </h1>
 
           <div className="flex items-center gap-6 pt-8 border-t border-white/5 text-[11px] font-black uppercase tracking-widest text-white/40">
-             <span>{post.author || "Principal Counsel"}</span>
+             <span>{post.author || "Solitic Consulting"}</span>
              <span>/</span>
              <span>{post.readingTime || "5"} MIN READ</span>
           </div>

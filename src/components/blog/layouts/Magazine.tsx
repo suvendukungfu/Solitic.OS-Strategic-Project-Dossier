@@ -70,7 +70,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
             <div className="flex items-center gap-12 pt-10 border-t border-white/10 w-fit">
               <div className="flex flex-col">
                 <span className="text-[10px] font-black text-gold uppercase tracking-widest mb-1">Author</span>
-                <span className="text-white font-display font-bold italic text-3xl">{post.author || "Principal Counsel"}</span>
+                <span className="text-white font-display font-bold italic text-3xl">{post.author || "Solitic Consulting"}</span>
               </div>
               <div className="flex flex-col border-l border-white/10 pl-12">
                 <span className="text-[10px] font-black text-white/40 uppercase tracking-widest mb-1">Docketed</span>
@@ -130,7 +130,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
                 {post.author?.[0] || 'S'}
              </div>
              <p className="text-[10px] font-black uppercase tracking-[0.5em] text-white/20 mb-2">Verified Analyst</p>
-             <p className="text-3xl font-display font-black italic text-white uppercase">{post.author || "Counsel"}</p>
+             <p className="text-3xl font-display font-black italic text-white uppercase">{post.author || "Solitic Consulting"}</p>
            </div>
         </aside>
       </div>

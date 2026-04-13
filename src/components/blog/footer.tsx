@@ -31,7 +31,7 @@ export function Footer() {
       </div>
 
       <div className="container max-w-7xl px-4 sm:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-muted-foreground uppercase tracking-widest border-t border-border/50 pt-12">
-        <span>© 2026 Golden Dynasty Advisory Group</span>
+        <span>© 2026 Solitic Consulting Advisory Group</span>
         <div className="flex gap-8">
           <Link href="/privacy" className="hover:text-primary">privacy</Link>
           <Link href="/terms" className="hover:text-primary">terms</Link>

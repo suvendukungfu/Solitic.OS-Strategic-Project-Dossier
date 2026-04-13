@@ -126,7 +126,7 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
                   <div className="space-y-8">
                      <div className="space-y-1">
                         <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.4em]">Authority</p>
-                        <p className="text-sm font-black text-white/60 tracking-tight">{featuredPost?.author || "Principal Counsel"}</p>
+                        <p className="text-sm font-black text-white/60 tracking-tight">{featuredPost?.author || "Solitic Consulting"}</p>
                      </div>
                      <div className="space-y-1">
                         <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.4em]">Category</p>

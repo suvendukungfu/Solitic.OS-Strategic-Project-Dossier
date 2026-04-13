@@ -53,7 +53,7 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
                  <Globe className="w-4 h-4 text-gold" />
                  <span className="text-[10px] font-black uppercase tracking-[0.5em]">Clearance</span>
               </div>
-              <p className="text-xs font-bold italic tracking-wide text-white/40 leading-relaxed px-2">Verified Archive Protocol Level IV. Authorized by Principal Counsel.</p>
+              <p className="text-xs font-bold italic tracking-wide text-white/40 leading-relaxed px-2">Verified Archive Protocol Level IV. Authorized by Solitic Consulting.</p>
             </div>
 
             <div className="pt-24 opacity-20">
@@ -83,7 +83,7 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-white/5 text-[10px] font-black uppercase tracking-[0.4em] text-white/40 italic">
                <div className="flex flex-col gap-1">
                  <span className="opacity-40">Authority</span>
-                 <span className="text-white opacity-100">{post.author || "Counsel"}</span>
+                 <span className="text-white opacity-100">{post.author || "Solitic Consulting"}</span>
                </div>
                <div className="flex flex-col gap-1">
                  <span className="opacity-40">Frequency</span>
