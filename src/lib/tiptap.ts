@@ -13,10 +13,47 @@ import { FontFamily } from '@tiptap/extension-font-family'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { JSONContent } from '@tiptap/react'
 
-/**
- * Standardized Tiptap extensions for both editor and rendering.
- * Using verified named and default imports to satisfy strict module resolution.
- */
+import { Extension } from '@tiptap/core';
+
+export const FontSize = Extension.create({
+  name: 'fontSize',
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            parseHTML: element => element.style.fontSize.replace(/['"]+/g, ''),
+            renderHTML: attributes => {
+              if (!attributes.fontSize) return {};
+              return { style: `font-size: ${attributes.fontSize}` };
+            },
+          },
+        },
+      },
+    ];
+  },
+  addCommands() {
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setFontSize: (fontSize: string) => ({ chain }: any) => {
+        return chain().setMark('textStyle', { fontSize }).run();
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      unsetFontSize: () => ({ chain }: any) => {
+        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any;
+  },
+});
+
 export const TIPTAP_EXTENSIONS = [
   StarterKit,
   Image,
@@ -41,6 +78,7 @@ export const TIPTAP_EXTENSIONS = [
   Typography,
   TextStyle,
   FontFamily,
+  FontSize,
 ];
 
 /**
