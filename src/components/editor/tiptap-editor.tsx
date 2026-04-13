@@ -91,12 +91,17 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
       Placeholder.configure({ 
         placeholder: ({ node }) => {
           if (node.type.name === 'heading') return 'Write your headline...';
-          return 'Start writing here...';
+          return 'Start writing...';
         }
       }),
     ],
     content: initialData?.content ? (typeof initialData.content === 'string' ? JSON.parse(initialData.content) : initialData.content) : DEFAULT_JSON_CONTENT,
     immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        class: 'prose prose-invert max-w-none focus:outline-none min-h-[500px]',
+      },
+    },
   });
 
   const onSave = useCallback(async () => {
