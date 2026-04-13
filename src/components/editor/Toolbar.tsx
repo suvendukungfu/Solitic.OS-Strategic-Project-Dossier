@@ -79,6 +79,18 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
             <option key={font.value} value={font.value} className="bg-black text-white">{font.name}</option>
           ))}
         </select>
+
+        <select 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          onChange={(e) => (editor.chain().focus() as any).setColor(e.target.value).run()}
+          className="bg-white/5 text-[10px] font-black uppercase tracking-widest text-white/60 px-2 py-1.5 rounded-lg focus:outline-none cursor-pointer hover:bg-white/10"
+        >
+          <option value="">Color</option>
+          <option value="#FFFFFF" className="bg-black text-white">White</option>
+          <option value="#C2A46D" className="bg-black text-gold">Gold</option>
+          <option value="rgba(255,255,255,0.7)" className="bg-black text-white/70">Silver</option>
+          <option value="rgba(255,255,255,0.4)" className="bg-black text-white/40">Muted</option>
+        </select>
       </div>
 
       <div className="flex items-center gap-1 px-2 border-r border-white/5">

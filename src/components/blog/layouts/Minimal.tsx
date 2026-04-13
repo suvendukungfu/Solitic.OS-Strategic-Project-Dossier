@@ -26,20 +26,20 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
                             'var(--font-sans)';
 
   return (
-    <article className="bg-white text-black min-h-screen py-40 selection:bg-gold/20">
+    <article className="bg-[#050505] text-[#e0e0e0] min-h-screen py-40 selection:bg-gold/20">
       <div className="max-w-[750px] mx-auto px-6">
         <header className="mb-32 space-y-12">
           <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] opacity-30">
-             <span>{post.category}</span>
-             <span className="w-1 h-1 rounded-full bg-black/20" />
+             <span className="text-gold">{post.category}</span>
+             <span className="w-1 h-1 rounded-full bg-white/10" />
              <span>{post.createdAt ? format(new Date(post.createdAt), "yyyy") : ""}</span>
           </div>
           
-          <h1 className="text-5xl md:text-8xl font-display font-black leading-[1] tracking-tighter uppercase text-black">
+          <h1 className="text-5xl md:text-8xl font-display font-black leading-[1] tracking-tighter uppercase text-white">
             {post.title}
           </h1>
 
-          <div className="flex items-center gap-6 pt-8 border-t border-black/5 text-[11px] font-black uppercase tracking-widest text-black/40">
+          <div className="flex items-center gap-6 pt-8 border-t border-white/5 text-[11px] font-black uppercase tracking-widest text-white/40">
              <span>{post.author || "Principal Counsel"}</span>
              <span>/</span>
              <span>{post.readingTime || "5"} MIN READ</span>
@@ -51,7 +51,7 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
             <img 
               src={post.coverImage} 
               alt={String(post.title)} 
-              className="w-full h-auto object-contain max-h-[600px] rounded-xl bg-[#f9f9f9]"
+              className="w-full h-auto object-contain max-h-[600px] rounded-xl bg-black border border-white/5"
             />
           </figure>
         )}
@@ -65,7 +65,7 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
            </div>
         </div>
 
-        <footer className="mt-40 pt-20 border-t border-black/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.6em] opacity-20">
+        <footer className="mt-40 pt-20 border-t border-white/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.6em] opacity-20">
           <span>Solitic Institutional Archive</span>
           <span>End of File</span>
         </footer>
@@ -76,7 +76,7 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
           font-family: inherit;
           font-size: 1.25rem;
           line-height: 2;
-          color: rgba(0,0,0,0.7);
+          color: rgba(255,255,255,0.5);
         }
         .minimal-content p {
           margin-bottom: 3.5rem;
@@ -88,18 +88,18 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
           margin-top: 6rem;
           margin-bottom: 2.5rem;
           letter-spacing: -0.02em;
-          color: black;
+          color: white;
           line-height: 1.1;
         }
         .minimal-content h2 { font-size: 3.5rem; }
         .minimal-content h3 { font-size: 2rem; }
         .minimal-content blockquote {
-          border-left: 2px solid black;
+          border-left: 2px solid #C2A46D;
           padding: 2rem 0 2rem 4rem;
           font-style: italic;
           font-size: 2rem;
           line-height: 1.5;
-          color: black;
+          color: white;
           margin: 6rem 0;
           font-family: var(--font-display);
           font-weight: 900;
@@ -108,14 +108,14 @@ export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
           width: 100% !important;
           border-radius: 0.5rem;
           margin: 6rem 0;
-          border: 1px solid rgba(0,0,0,0.05);
+          border: 1px solid rgba(255,255,255,0.05);
         }
         .minimal-content ul, .minimal-content ol {
           margin-bottom: 3.5rem;
           padding-left: 1.5rem;
-          border-left: 1px solid rgba(0,0,0,0.05);
+          border-left: 1px solid rgba(255,255,255,0.1);
         }
-        .minimal-content li { margin-bottom: 1.5rem; }
+        .minimal-content li { margin-bottom: 1.5rem; color: #fff; }
 
         .font-poppins { font-family: var(--font-poppins) !important; }
         .font-merriweather { font-family: var(--font-merriweather) !important; }

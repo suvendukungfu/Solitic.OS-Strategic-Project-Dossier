@@ -15,6 +15,44 @@ import { JSONContent } from '@tiptap/react'
 
 import { Extension } from '@tiptap/core';
 
+export const Color = Extension.create({
+  name: 'color',
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          color: {
+            default: null,
+            parseHTML: element => element.style.color.replace(/['"]+/g, ''),
+            renderHTML: attributes => {
+              if (!attributes.color) return {};
+              return { style: `color: ${attributes.color}` };
+            },
+          },
+        },
+      },
+    ];
+  },
+  addCommands() {
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setColor: (color: string) => ({ chain }: any) => {
+        return chain().setMark('textStyle', { color }).run();
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      unsetColor: () => ({ chain }: any) => {
+        return chain().setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
+      },
+    } as any;
+  },
+});
+
 export const FontSize = Extension.create({
   name: 'fontSize',
   addOptions() {
@@ -79,6 +117,7 @@ export const TIPTAP_EXTENSIONS = [
   TextStyle,
   FontFamily,
   FontSize,
+  Color,
 ];
 
 /**
