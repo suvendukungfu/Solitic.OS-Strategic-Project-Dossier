@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { FloatingParticles, GlitterEffect } from "@/components/GlitterEffect";
 import heroBg from "@/assets/hero-corporate.jpg";
-import soliticLogo from "@/assets/solitic-logo.png";
+import { SoliticLogo } from "@/components/SoliticLogo";
 import { cn } from "@/lib/utils";
 import { useRef } from "react";
 
@@ -19,9 +19,6 @@ export function HeroSection() {
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   const bgImg = typeof heroBg === "object" && "src" in heroBg ? (heroBg as { src: string }).src : heroBg;
-  const logoImg = typeof soliticLogo === "object" && "src" in soliticLogo ? (soliticLogo as { src: string }).src : soliticLogo;
-
-  const titleWords = "Your Business Has Gaps.".split(" ");
 
   return (
     <section 
@@ -51,6 +48,7 @@ export function HeroSection() {
       {/* Animated gradient orbs */}
       <motion.div
         className="absolute top-1/4 -left-1/4 w-[600px] h-[600px] rounded-full bg-blue/10 blur-3xl"
+        initial={{ scale: 1, x: 0, y: 0 }}
         animate={{
           scale: [1, 1.2, 1],
           x: [0, 50, 0],
@@ -65,23 +63,20 @@ export function HeroSection() {
         className="relative z-[60] container mx-auto px-6 pt-20"
       >
         <div className="max-w-5xl mx-auto text-center">
-          {/* Logo - Senior Level entry */}
+          {/* Logo - Premium Institutional Presentation */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex justify-center mb-12 sm:mb-16"
+            transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+            className="flex justify-center mb-16 pt-8"
           >
             <div className="relative">
-              <img 
-                src={logoImg as string} 
-                alt="Solitic Consulting" 
-                className="h-20 sm:h-28 md:h-32 w-auto filter drop-shadow-[0_0_30px_rgba(201,166,70,0.15)] relative z-10"
-              />
+              <SoliticLogo size="xl" variant="full" priority={true} />
               <motion.div 
-                className="absolute inset-0 bg-gold/5 blur-3xl rounded-full"
-                animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-0 bg-gold/5 blur-[120px] rounded-full"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
               />
             </div>
           </motion.div>
@@ -91,74 +86,57 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/5 bg-white/5 mb-12 backdrop-blur-xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
+            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-white/5 bg-white/5 mb-14 backdrop-blur-xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)]"
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-            <span className="font-body text-[10px] sm:text-[11px] text-gold/80 uppercase tracking-[0.4em] font-black">Institutional Integrity Defined</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-[#C9A646] animate-pulse" />
+            <span className="font-body text-[10px] sm:text-[11px] text-[#C9A646]/80 uppercase tracking-[0.5em] font-black">Corporate Excellence Redefined</span>
           </motion.div>
  
           {/* Headline - Masterclass Typography */}
-          <div className="mb-14 space-y-4">
-            <h1 className="font-display text-5xl sm:text-6xl md:text-8xl lg:text-[10rem] font-black text-off-white leading-[0.85] tracking-tighter uppercase">
-              <div className="flex flex-wrap justify-center gap-x-[0.1em] overflow-hidden pb-4">
-                {titleWords.map((word, i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    transition={{ 
-                      duration: 1.2, 
-                      delay: 0.4 + (i * 0.08),
-                      ease: [0.22, 1, 0.36, 1]
-                    }}
-                    className="inline-block"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </div>
+          <div className="mb-14 space-y-6 flex flex-col items-center">
+            <h1 className="font-display text-5xl md:text-7xl lg:text-[7.5rem] font-black text-white leading-[0.9] tracking-[-0.05em] max-w-4xl mx-auto drop-shadow-2xl">
+              Your Business <br /> <span className="text-[#C9A646]">Has Gaps.</span>
             </h1>
-            <motion.div
+            
+            <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.1 }}
-              className="relative py-2"
+              className="font-sans text-2xl md:text-3xl lg:text-[2.6rem] text-white font-semibold tracking-[-0.04em] mt-2 drop-shadow-md"
             >
-              <span className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-glitter italic font-medium tracking-tight block">
-                We Find Them Before They Cost You.
-              </span>
-              <motion.div
-                className="absolute -bottom-2 left-1/3 right-1/3 h-[1px] bg-gold/20"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ duration: 1.5, delay: 2 }}
-              />
-            </motion.div>
+              We Find Them Before They Cost You.
+            </motion.h2>
           </div>
  
           {/* Subheadline and Description - Precision Layout */}
-          <div className="max-w-3xl mx-auto mb-16 space-y-10">
+          <div className="max-w-2xl mx-auto mb-16 space-y-12">
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.3 }}
-              className="font-body text-lg sm:text-xl md:text-2xl text-white/50 leading-relaxed font-light tracking-tight px-4"
+              className="font-cormorant text-xl md:text-2xl text-white/50 leading-relaxed italic font-light px-4"
             >
               The gap between where you are and where you should be?<br />
-              <span className="text-white font-medium italic">It has a name. We fix it.</span>
+              <span className="font-bold text-[#C9A646] drop-shadow-[0_0_10px_rgba(201,166,70,0.2)]">It has a name. We fix it.</span>
             </motion.p>
  
             <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.5, delay: 1.6 }}
-              className="flex items-center justify-center gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.5 }}
+              className="space-y-8"
             >
-              <div className="h-px w-8 bg-gold/20" />
-              <p className="font-body text-[10px] sm:text-[11px] text-white/20 uppercase tracking-[0.5em] font-bold">
-                End-to-end legal and strategic advisory
+              <p className="font-body text-sm text-gray-400 max-w-xl mx-auto leading-relaxed">
+                End-to-end legal and strategic advisory for businesses, law firms, and CA practices.
               </p>
-              <div className="h-px w-8 bg-gold/20" />
+              
+              <div className="flex items-center justify-center gap-6 opacity-30">
+                <div className="h-px w-8 bg-gold/50" />
+                <p className="font-body text-[10px] text-white uppercase tracking-[0.5em] font-bold">
+                  Strategic Advisory
+                </p>
+                <div className="h-px w-8 bg-gold/50" />
+              </div>
             </motion.div>
           </div>
  
@@ -226,12 +204,14 @@ export function HeroSection() {
       >
         <span className="text-[10px] uppercase tracking-[0.4em] text-white/20 font-black">Scroll</span>
         <motion.div
+          initial={{ y: 0 }}
           animate={{ y: [0, 12, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="w-[30px] h-[50px] rounded-full border-2 border-white/10 flex items-start justify-center p-2 backdrop-blur-sm"
         >
           <motion.div 
             className="w-1.5 h-3 bg-gold rounded-full shadow-[0_0_10px_rgba(201,166,70,0.5)]"
+            initial={{ opacity: 1 }}
             animate={{ opacity: [1, 0.4, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           />

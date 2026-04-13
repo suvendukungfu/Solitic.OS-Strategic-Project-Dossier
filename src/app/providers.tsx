@@ -7,27 +7,11 @@ import { useState, useEffect } from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Senior Level Fix: Prevent hydration mismatch from ThemeProvider script injection
-  if (!mounted) {
-    return (
-      <SessionProvider>
-        <QueryClientProvider client={queryClient}>
-          <div suppressHydrationWarning>{children}</div>
-        </QueryClientProvider>
-      </SessionProvider>
-    );
-  }
 
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>
       </QueryClientProvider>

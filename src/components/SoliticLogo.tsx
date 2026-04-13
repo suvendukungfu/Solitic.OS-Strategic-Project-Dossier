@@ -1,38 +1,57 @@
 'use client';
 import { motion } from "framer-motion";
-import soliticLogo from "@/assets/solitic-logo.png";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface SoliticLogoProps {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   animated?: boolean;
-  showText?: boolean;
+  variant?: "icon" | "full" | "mark";
+  priority?: boolean;
+  className?: string;
 }
 
-export function SoliticLogo({ size = "md", animated = true, showText = true }: SoliticLogoProps) {
+export function SoliticLogo({ 
+  size = "md", 
+  animated = true, 
+  variant = "full",
+  priority = false,
+  className
+}: SoliticLogoProps) {
   const sizeClasses = {
-    sm: "h-8",
-    md: "h-12",
-    lg: "h-20",
+    sm: "h-10 w-10",
+    md: "h-14 w-14",
+    lg: "h-24 w-24",
+    xl: "h-36 w-36",
   };
 
-  const logoSrc = typeof soliticLogo === "object" && "src" in soliticLogo 
-    ? (soliticLogo as { src: string }).src 
-    : soliticLogo;
-
+  // The institutional logo asset is square (1850x1780).
+  // We apply institutional-grade filters to ensure the gold branding "pops" 
+  // and the "CONSULTING" subtext remains legible against dark editorial backgrounds.
+  
   return (
     <motion.div
-      className="flex items-center gap-3 group cursor-pointer relative"
-      whileHover={{ scale: 1.02 }}
+      className={cn("flex items-center justify-center group cursor-pointer relative", className)}
+      whileHover={animated ? { scale: 1.05 } : {}}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
-      <motion.img
-        src={logoSrc as string}
-        alt="Solitic Consulting"
-        className={`${sizeClasses[size]} w-auto`}
-        initial={animated ? { opacity: 0, scale: 0.8 } : {}}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-      />
+      <div className={cn(
+        "relative flex items-center justify-center",
+        sizeClasses[size]
+      )}>
+        <Image
+          src="/logo.png"
+          alt="Solitic Consulting"
+          fill
+          priority={priority}
+          className={cn(
+            "object-contain transition-all duration-300",
+            "brightness-[1.15] contrast-[1.05] saturate-[1.1]",
+            "drop-shadow-[0_0_8px_rgba(255,255,255,0.08)]"
+          )}
+          sizes="(max-width: 768px) 100vw, 120px"
+        />
+      </div>
     </motion.div>
   );
 }

@@ -135,10 +135,11 @@ export function Navbar() {
     setIsOpen(false);
   };
 
-  const controlShellClasses = cn(
-    "rounded-full border px-3 py-2 shadow-[0_12px_36px_rgba(15,23,42,0.12)] backdrop-blur-xl transition-all duration-300",
+  const getShellClasses = (isLogo: boolean = false) => cn(
+    "border shadow-[0_12px_36px_rgba(3,7,18,0.25)] backdrop-blur-2xl transition-all duration-500 ease-in-out",
+    isLogo ? "rounded-2xl px-3 py-2.5" : "rounded-full px-3 py-2",
     scrolled
-      ? "border-border/70 bg-background/88"
+      ? "border-white/10 bg-black/60 shadow-black/40"
       : "border-white/15 bg-background/60 supports-[backdrop-filter]:bg-background/45",
   );
 
@@ -147,34 +148,35 @@ export function Navbar() {
       <motion.header
         initial={{ y: -24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
-          "fixed inset-x-0 top-0 z-[100] transition-all duration-300",
+          "fixed inset-x-0 top-0 z-[100] transition-all duration-500",
           scrolled
-            ? "border-b border-border/60 bg-background/85 shadow-lg backdrop-blur-xl"
-            : "bg-transparent py-5",
+            ? "border-b border-white/5 bg-background/80 shadow-2xl backdrop-blur-2xl"
+            : "bg-transparent py-6",
         )}
       >
-        <div className="container mx-auto px-4 sm:px-6">
+        <div className="container mx-auto px-4 sm:px-8">
           <div className="relative flex h-20 items-center justify-center">
             <Link
               href="/"
               onClick={handleNavClick("/")}
               className={cn(
-                "absolute left-0 top-1/2 z-20 -translate-y-1/2",
-                controlShellClasses,
+                "absolute left-0 top-1/2 z-20 -translate-y-1/2 flex items-center justify-center group overflow-visible",
+                getShellClasses(true),
               )}
               aria-label="Solitic home"
             >
-              <SoliticLogo size="sm" animated={false} />
+              <SoliticLogo size="md" variant="full" priority={true} />
+              <div className="absolute inset-0 rounded-2xl bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Link>
 
             <nav
               aria-label="Primary navigation"
               className={cn(
-                "hidden md:flex items-center gap-1 rounded-full border px-2 py-1.5 shadow-[0_14px_44px_rgba(15,23,42,0.12)] backdrop-blur-xl",
+                "hidden md:flex items-center gap-1 rounded-full border px-2 py-1.5 shadow-[0_14px_44px_rgba(3,7,18,0.2)] backdrop-blur-2xl",
                 scrolled
-                  ? "border-border/70 bg-background/88"
+                  ? "border-white/10 bg-black/40"
                   : "border-white/15 bg-background/60 supports-[backdrop-filter]:bg-background/45",
               )}
             >
@@ -196,20 +198,20 @@ export function Navbar() {
               aria-expanded={isOpen}
               onClick={() => setIsOpen((open) => !open)}
               className={cn(
-                "absolute right-0 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center md:hidden",
-                controlShellClasses,
+                "absolute right-0 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center md:hidden active:scale-95 transition-transform",
+                getShellClasses(false),
               )}
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
                   key={isOpen ? "close" : "open"}
-                  initial={{ opacity: 0, rotate: -45, scale: 0.85 }}
+                  initial={{ opacity: 0, rotate: -45, scale: 0.8 }}
                   animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 45, scale: 0.85 }}
-                  transition={{ duration: 0.18 }}
+                  exit={{ opacity: 0, rotate: 45, scale: 0.8 }}
+                  transition={{ duration: 0.2, ease: "circOut" }}
                   className="flex items-center justify-center"
                 >
-                  {isOpen ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
+                  {isOpen ? <X className="h-6 w-6 text-foreground" /> : <Menu className="h-6 w-6 text-foreground" />}
                 </motion.span>
               </AnimatePresence>
             </button>
@@ -228,19 +230,19 @@ export function Navbar() {
             <button
               type="button"
               aria-label="Close navigation menu"
-              className="absolute inset-0 bg-charcoal/20 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
               onClick={() => setIsOpen(false)}
             />
 
             <motion.div
               id="mobile-navigation"
-              initial={{ opacity: 0, y: -18, scale: 0.96 }}
+              initial={{ opacity: 0, y: -24, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -12, scale: 0.98 }}
-              transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute left-4 right-4 top-[5.5rem] rounded-[28px] border border-border/70 bg-background/95 p-3 shadow-[0_28px_80px_rgba(15,23,42,0.16)] backdrop-blur-2xl"
+              exit={{ opacity: 0, y: -16, scale: 0.98 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute left-4 right-4 top-[5.5rem] rounded-[32px] border border-white/10 bg-background/95 p-4 shadow-[0_32px_96px_rgba(0,0,0,0.4)] backdrop-blur-3xl"
             >
-              <nav className="flex flex-col gap-1" aria-label="Mobile navigation">
+              <nav className="flex flex-col gap-2" aria-label="Mobile navigation">
                 {navLinks.map((link) => (
                   <NavItem
                     key={link.href}

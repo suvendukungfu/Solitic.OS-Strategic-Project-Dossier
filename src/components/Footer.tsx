@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Linkedin, Twitter, Instagram } from "lucide-react";
 import { motion } from "framer-motion";
-import soliticLogo from "@/assets/solitic-logo.png";
+import { SoliticLogo } from "./SoliticLogo";
 
 export function Footer() {
-  const logoImg = typeof soliticLogo === "object" && "src" in soliticLogo ? (soliticLogo as { src: string }).src : soliticLogo;
 
   return (
     <footer className="bg-charcoal text-off-white relative overflow-hidden">
@@ -22,12 +21,8 @@ export function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link href="/" className="inline-block mb-6">
-               <img 
-                src={logoImg as string} 
-                alt="Solitic Consulting" 
-                className="h-16 w-auto"
-              />
+            <Link href="/" className="inline-block mb-8">
+               <SoliticLogo size="md" variant="full" />
             </Link>
             <p className="text-off-white/70 font-body text-sm leading-relaxed">
               Your trusted partner in legal and strategic advisory. Building bridges between complexity and clarity.
@@ -117,10 +112,15 @@ export function Footer() {
 
             {/* Social */}
             <div className="flex gap-4 mt-6">
-              {[Linkedin, Twitter, Instagram].map((Icon, idx) => (
+              {[
+                { Icon: Linkedin, href: "https://www.linkedin.com/company/solitic-consulting/" },
+                { Icon: Instagram, href: "https://www.instagram.com/solitic.consulting?igsh=MW85OXBhbnh6anlpOQ%3D%3D&utm_source=qr" }
+              ].map(({ Icon, href }, idx) => (
                 <motion.a
                   key={idx}
-                  href="#"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full border border-off-white/20 flex items-center justify-center hover:border-gold hover:bg-gold/10 transition-all duration-300 relative overflow-hidden group"
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
@@ -145,7 +145,7 @@ export function Footer() {
           viewport={{ once: true }}
         >
           <p className="font-body text-sm text-off-white/50">
-            © 2024 Solitic Consulting. All rights reserved.
+            © 2026 Solitic Consulting. All rights reserved.
           </p>
           <div className="flex gap-6">
             {["Privacy Policy", "Terms of Service"].map((item) => (
