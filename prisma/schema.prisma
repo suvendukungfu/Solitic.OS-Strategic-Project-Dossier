@@ -14,13 +14,19 @@ model Post {
   id          String   @id @default(cuid())
   title       String
   slug        String   @unique
-  content     Json     // SQLite stores this as text under the hood
-  coverImage  String?
+  category    String   // Corporate Law, Taxation, etc.
+  author      String   @default("Golden Dynasty Counsel")
   excerpt     String?
-  tags        String   // SQLite does not support String[], store as joined string or JSON string
-  status      String   @default("DRAFT") // "DRAFT" | "PUBLISHED"
+  content     Json     // Tiptap JSON content
+  tags        String?  // classification labels
+  coverImage  String?  // image URL
+  readingTime Int      @default(5)
+  featured    Boolean  @default(false)
+  trending    Boolean  @default(false)
+  status      String   @default("PUBLISHED") 
+  layoutType   String   @default("editorial")
+  fonts       String   @default("Inter") 
   viewCount   Int      @default(0)
-  readingTime Int      @default(0) // Estimation in minutes
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   deletedAt   DateTime?
