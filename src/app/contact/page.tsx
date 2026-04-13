@@ -5,7 +5,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Clock, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Clock, CheckCircle2, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ContactPage() {
@@ -75,6 +75,13 @@ export default function ContactPage() {
       value: 'www.solitic.in',
       description: 'Visit us online',
       href: 'https://www.solitic.in',
+    },
+    {
+      icon: Instagram,
+      title: 'Instagram',
+      value: '@solitic.consulting',
+      description: 'Follow our legal insights',
+      href: 'https://www.instagram.com/solitic.consulting?igsh=MW85OXBhbnh6anlpOQ%3D%3D&utm_source=qr',
     },
     {
       icon: Clock,

@@ -8,8 +8,8 @@ import { TeamMemberCard } from "@/components/TeamMemberCard";
 import { motion } from "framer-motion";
 import { Target, Heart, Award, Users, CheckCircle } from "lucide-react";
 import patternGold from "@/assets/pattern-gold.jpg";
-import siddhDhingra from "@/assets/siddh-dhingra.jpeg";
-import ashishTiwari from "@/assets/ashish-tiwari.jpeg";
+import siddhDhingra from "@/app/about/picture/siddhdingra.jpeg";
+import ashishTiwari from "@/app/about/picture/ashishtiwari.jpeg";
 
 
 const values = [
@@ -61,7 +61,7 @@ const teamMembers = [
       "Siddh Dhingra is a Company Secretary and Corporate Fixer based in Moradabad.",
       "With experience across multinational clients, cross-border FEMA transactions, and complex corporate structuring, he leads mandates where legal depth and business execution need to move together.",
     ],
-    imageSrc: siddhDhingra.src,
+    imageSrc: ashishTiwari.src,
     imageAlt: "Siddh Dhingra - Founder & Lead Consultant",
     highlightText:
       "He founded Solitic Consulting to build something tier-2 cities have never had - a full-stack business advisory ecosystem under one roof.",
@@ -84,7 +84,7 @@ const teamMembers = [
       "Ashish Tiwari is a Chartered Accountant with deep expertise in accounting, taxation, and financial strategy. But more than compliance, he thinks like a CFO.",
       "He helps businesses understand not just where their money is, but where it should be going.",
     ],
-    imageSrc: typeof ashishTiwari === "object" && "src" in ashishTiwari ? (ashishTiwari as { src: string }).src : ashishTiwari,
+    imageSrc: siddhDhingra.src,
     imageAlt: "CA Ashish Tiwari - Finance Advisor",
     highlightText:
       "From tax optimisation to financial structuring and CFO-level decision making, Ashish brings the kind of financial intelligence that turns a business's numbers into its biggest competitive advantage.",

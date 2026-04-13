@@ -64,6 +64,8 @@ export default {
       },
       fontFamily: {
         display: ['Playfair Display', 'serif'],
+        'serif-display': ['var(--font-serif-display)', 'serif'],
+        'serif-elegant': ['var(--font-serif-elegant)', 'serif'],
         body: ['DM Sans', 'sans-serif'],
         sans: ['var(--font-sans)', 'Inter', 'sans-serif'],
       },

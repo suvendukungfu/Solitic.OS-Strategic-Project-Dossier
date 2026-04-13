@@ -30,8 +30,10 @@ export const metadata: Metadata = {
   },
 };
 
+import { Post } from "@prisma/client";
+
 export default async function BlogListing() {
-  let posts: any[] = [];
+  let posts: Post[] = [];
   try {
     const dbPosts = await prisma.post.findMany({
       where: { status: "PUBLISHED" },

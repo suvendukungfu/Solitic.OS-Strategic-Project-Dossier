@@ -6,6 +6,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import { MOCKUP_POSTS } from "@/lib/blog-data";
+import { renderPlainText } from "@/lib/tiptap";
+
+import { Post } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -14,9 +17,8 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   const params = await props.params;
   const session = await getServerSession(authOptions);
-  const userRole = (session?.user as { role?: string })?.role;
   
-  let post: any = null;
+  let post: Post | null = null;
   try {
     const dbPost = await prisma.post.findUnique({
       where: { slug: params.slug },
@@ -35,11 +37,12 @@ export async function generateMetadata(props: {
     return { title: "Post Not Found | Solitic Consulting" };
   }
 
+  const plainExcerpt = renderPlainText(post.excerpt) || "Legal and strategic insights from Solitic Consulting.";
   const imageUrl = post.coverImage ? absoluteUrl(post.coverImage) : undefined;
 
   return {
     title: `${post.title} | Solitic Consulting`,
-    description: post.excerpt || "Legal and strategic insights from Solitic Consulting.",
+    description: plainExcerpt,
     alternates: {
       canonical: `/blog/${post.slug}`,
     },
@@ -47,7 +50,7 @@ export async function generateMetadata(props: {
       url: absoluteUrl(`/blog/${post.slug}`),
       siteName: siteConfig.name,
       title: post.title,
-      description: post.excerpt || "Legal and strategic insights from Solitic Consulting.",
+      description: plainExcerpt,
       images: imageUrl ? [imageUrl] : [],
       type: "article",
       publishedTime: typeof post.createdAt === 'string' ? post.createdAt : post.createdAt.toISOString(),
@@ -56,7 +59,7 @@ export async function generateMetadata(props: {
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.excerpt || "Legal and strategic insights from Solitic Consulting.",
+      description: plainExcerpt,
       images: imageUrl ? [imageUrl] : [],
     },
   };
@@ -66,7 +69,7 @@ export default async function BlogPostPage(props: {
   params: Promise<{ slug: string }>;
 }) {
   const params = await props.params;
-  let post: any = null;
+  let post: Post | null = null;
   try {
     const dbPost = await prisma.post.findUnique({
       where: { slug: params.slug },
@@ -93,7 +96,7 @@ export default async function BlogPostPage(props: {
     }
   }
 
-  let relatedPosts: any[] = [];
+  let relatedPosts: Post[] = [];
   try {
     relatedPosts = await prisma.post.findMany({
       where: { 
