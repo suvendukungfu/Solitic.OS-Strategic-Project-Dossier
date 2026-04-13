@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Lock, Mail, Eye, EyeOff, ArrowRight, ShieldCheck, Newspaper } from 'lucide-react';
 import Link from 'next/link';
+import { SoliticLogo } from "@/components/SoliticLogo";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -61,9 +62,7 @@ export default function AdminLogin() {
       {/* Left — Branding Panel */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-16 bg-charcoal border-r border-off-white/10">
         <Link href="/" className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gold rounded flex items-center justify-center">
-            <span className="font-display font-black text-charcoal text-sm">S</span>
-          </div>
+          <SoliticLogo size="sm" variant="mark" animated={false} />
           <span className="font-display font-black text-off-white text-xl tracking-tight">Solitic</span>
         </Link>
 
