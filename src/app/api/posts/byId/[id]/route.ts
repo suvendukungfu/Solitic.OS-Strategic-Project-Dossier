@@ -59,7 +59,12 @@ export async function PUT(
     
     // Explicitly destructure to avoid passing 'id' to prisma and to calculate metrics
     const { id, ...updateData } = validatedData;
-    const readingTime = calculateReadingTime(validatedData.content);
+    
+    // Stringify content for reading time if it's an object
+    const contentString = typeof updateData.content === 'object' 
+      ? JSON.stringify(updateData.content) 
+      : String(updateData.content || '');
+    const readingTime = calculateReadingTime(contentString);
 
     // Initial Slug Generation with Collision Protection if slug changed
     let slug = updateData.slug;
@@ -72,14 +77,19 @@ export async function PUT(
        }
     }
 
-    const updatePayload = {
-      ...updateData,
+    const updatePayload: Prisma.PostUpdateInput = {
+      title: updateData.title,
       slug: slug || updateData.slug,
+      content: (updateData.content || {}) as Prisma.InputJsonValue,
+      excerpt: (updateData.excerpt ? JSON.stringify(updateData.excerpt) : null) as any,
+      category: updateData.category || "General",
       readingTime,
       tags: updateData.tags || '',
       coverImage: updateData.coverImage || null,
-      excerpt: updateData.excerpt || null,
-    } as unknown as Prisma.PostUpdateInput;
+      status: updateData.status || "DRAFT",
+      layoutType: updateData.layoutType || "editorial",
+      fonts: updateData.fonts || "Inter",
+    };
 
     const post = await prisma.post.update({
       where: { id: resolvedParams.id },

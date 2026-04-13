@@ -39,7 +39,12 @@ export async function POST(req: Request) {
     const validatedData = postSchema.parse(body);
     
     const { id, ...postData } = validatedData;
-    const readingTime = calculateReadingTime(validatedData.content);
+    
+    // Ensure content is stringified for reading time calculation if it's an object
+    const contentString = typeof postData.content === 'object' 
+      ? JSON.stringify(postData.content) 
+      : String(postData.content || '');
+    const readingTime = calculateReadingTime(contentString);
 
     // Initial Slug Generation with Collision Protection
     let slug = postData.slug || slugify(postData.title);
@@ -48,21 +53,23 @@ export async function POST(req: Request) {
        slug = `${slug}-${Math.random().toString(36).substring(2, 7)}`;
     }
 
-    // Construct valid Prisma creation data, aligning with the actual database schema
-    // and using type-assertions to satisfy the stagnant local TypeScript environment.
+    // Construct valid Prisma creation data
     const creationData = {
       title: postData.title,
       slug,
-      content: postData.content as Prisma.InputJsonValue,
+      content: (postData.content || {}) as Prisma.InputJsonValue,
+      excerpt: postData.excerpt ? String(postData.excerpt) : null,
+      category: postData.category || "General",
       readingTime,
       tags: postData.tags || '',
       coverImage: postData.coverImage || null,
-      excerpt: postData.excerpt || null,
       status: postData.status || "DRAFT",
-    } as unknown as Prisma.PostCreateInput;
+      layoutType: postData.layoutType || "editorial",
+      fonts: postData.fonts || "Inter",
+    };
 
     const post = await prisma.post.create({
-      data: creationData,
+      data: creationData as unknown as Prisma.PostCreateInput,
     });
 
     // Integrated Live Revalidation
