@@ -6,12 +6,7 @@ import axios from 'axios';
 import { slugify, cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Image from '@tiptap/extension-image';
-import Link from '@tiptap/extension-link';
-import Underline from '@tiptap/extension-underline';
-import TextAlign from '@tiptap/extension-text-align';
-import Placeholder from '@tiptap/extension-placeholder';
+import { TIPTAP_EXTENSIONS } from '@/lib/tiptap';
 import { Post } from '@prisma/client';
 import { 
   ArrowLeft, Clock, Upload, Save, Rocket, Eye, Trash, 
@@ -20,6 +15,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EditorToolbar } from './Toolbar';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
 
 // Import Layouts directly for the Canvas
 import EditorialLayout from '../blog/layouts/Editorial';
@@ -77,9 +74,9 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(initialData?.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT");
   const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
   const [tags, setTags] = useState(initialData?.tags || '');
-  const [layoutType, setLayoutType] = useState<string>((initialData as any)?.layoutType || 'editorial');
+  const [layoutType, setLayoutType] = useState<string>((initialData as BlogPost)?.layoutType || 'editorial');
   const [author, setAuthor] = useState(initialData?.author || 'Principal Counsel');
-  const [selectedFont, setSelectedFont] = useState('inter');
+  const [selectedFont, setSelectedFont] = useState(initialData?.fonts || 'inter');
 
   // Logic states
   const [isSaving, setIsSaving] = useState(false);
@@ -90,11 +87,7 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
   // Editor Implementation
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Image,
-      Link.configure({ openOnClick: false }),
-      Underline,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      ...TIPTAP_EXTENSIONS,
       Placeholder.configure({ 
         placeholder: ({ node }) => {
           if (node.type.name === 'heading') return 'Write your headline...';
@@ -124,6 +117,7 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
         tags,
         status,
         layoutType,
+        fonts: selectedFont,
         author,
         createdAt: initialData?.createdAt || new Date().toISOString(),
       };
@@ -145,7 +139,7 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
     } finally {
       setIsSaving(false);
     }
-  }, [postId, title, category, slug, editor, coverImage, tags, status, layoutType, author, initialData]);
+  }, [postId, title, category, slug, editor, coverImage, tags, status, layoutType, selectedFont, author, initialData]);
 
   const onDelete = async () => {
     if (!postId) return;
@@ -167,6 +161,7 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
     tags,
     status,
     layoutType,
+    fonts: selectedFont,
     author,
     createdAt: initialData?.createdAt || new Date().toISOString(),
     content: editor?.getJSON() || {},
@@ -177,20 +172,29 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
     trending: false,
     viewCount: 0,
     deletedAt: null
-  }), [postId, title, category, slug, coverImage, tags, status, layoutType, author, editor, initialData]);
+  }), [postId, title, category, slug, coverImage, tags, status, layoutType, selectedFont, author, editor, initialData]);
 
   const renderCanvas = () => {
+    const selectedFontFamily = selectedFont.toLowerCase() === 'playfair' ? 'var(--font-display)' :
+                              selectedFont.toLowerCase() === 'poppins' ? 'var(--font-poppins)' :
+                              selectedFont.toLowerCase() === 'merriweather' ? 'var(--font-merriweather)' :
+                              selectedFont.toLowerCase() === 'fira' ? 'var(--font-mono-fira)' :
+                              'var(--font-sans)';
+
     const props = { 
       post: currentPostForCanvas as unknown as BlogPost, 
       relatedPosts: [], 
       contentOverride: (
-        <div className={cn("outline-none transition-all duration-300", 
-          selectedFont === 'inter' && "font-sans",
-          selectedFont === 'playfair' && "font-display",
-          selectedFont === 'poppins' && "font-poppins",
-          selectedFont === 'merriweather' && "font-merriweather",
-          selectedFont === 'fira' && "font-mono-fira"
-        )}>
+        <div 
+          className={cn("outline-none transition-all duration-300", 
+            selectedFont === 'inter' && "font-sans",
+            selectedFont === 'playfair' && "font-display",
+            selectedFont === 'poppins' && "font-poppins",
+            selectedFont === 'merriweather' && "font-merriweather",
+            selectedFont === 'fira' && "font-mono-fira"
+          )}
+          style={{ fontFamily: selectedFontFamily }}
+        >
           <EditorContent editor={editor} />
         </div>
       )
