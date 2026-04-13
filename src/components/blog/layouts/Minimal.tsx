@@ -1,120 +1,125 @@
 'use client';
 
-import { motion } from "framer-motion";
-import { renderContent } from "@/lib/tiptap";
-import { ArrowLeft, Share2, Link as LinkIcon, Twitter, Linkedin } from "lucide-react";
-import Link from "next/link";
-import { JSONContent } from "@tiptap/react";
 import { format } from "date-fns";
+import { renderContent } from "@/lib/tiptap";
 import { LayoutProps } from "../types";
+import { cn } from "@/lib/utils";
 
-export default function MinimalLayout({ post, relatedPosts, contentOverride }: LayoutProps) {
-  const tags = post.tags ? String(post.tags).split(",").filter(Boolean) : [];
+export default function MinimalLayout({ post, contentOverride }: LayoutProps) {
   
+  // Font System Resolver
+  const getFontClass = (font?: string) => {
+    switch(font?.toLowerCase()) {
+      case 'playfair': return 'font-display';
+      case 'poppins': return 'font-poppins';
+      case 'merriweather': return 'font-merriweather';
+      case 'fira': return 'font-mono-fira';
+      default: return 'font-sans';
+    }
+  };
+
+  const selectedFontClass = getFontClass(post.fonts);
+  const selectedFontFamily = post.fonts?.toLowerCase() === 'playfair' ? 'var(--font-display)' :
+                            post.fonts?.toLowerCase() === 'poppins' ? 'var(--font-poppins)' :
+                            post.fonts?.toLowerCase() === 'merriweather' ? 'var(--font-merriweather)' :
+                            post.fonts?.toLowerCase() === 'fira' ? 'var(--font-mono-fira)' :
+                            'var(--font-sans)';
+
   return (
-    <article className="bg-white text-black min-h-screen">
-      {/* Top Header */}
-      <nav className="fixed top-0 left-0 right-0 h-20 border-b border-black/5 bg-white/80 backdrop-blur-3xl z-50 flex items-center justify-between px-10">
-         <Link href="/blog" className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.4em] text-black/40 hover:text-black transition-colors group">
-            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Archive
-         </Link>
-         <h3 className="text-xl font-display font-black tracking-tighter italic">Solitic.</h3>
-         <div className="flex gap-6">
-            <Share2 className="w-4 h-4 text-black/20 hover:text-black transition-colors cursor-pointer" />
-         </div>
-      </nav>
-
-      <div className="max-w-3xl mx-auto px-6 pt-52 pb-40">
-        <header className="space-y-12 mb-32">
-          <div className="flex flex-col items-center text-center space-y-8">
-            <div className="text-[10px] font-black uppercase tracking-[0.5em] text-black/20 border-b border-black/10 pb-4 w-full">
-               {post.category} / {format(new Date(post.createdAt), "yyyy")}
-            </div>
-            <h1 className="text-5xl md:text-7xl font-display font-black tracking-tighter leading-tight italic">
-              {post.title}
-            </h1>
-            <p className="text-lg text-black/40 font-serif italic max-w-xl mx-auto leading-relaxed"
-               dangerouslySetInnerHTML={{ __html: renderContent(post.excerpt) }} />
+    <article className="bg-white text-black min-h-screen py-40 selection:bg-gold/20">
+      <div className="max-w-[750px] mx-auto px-6">
+        <header className="mb-32 space-y-12">
+          <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] opacity-30">
+             <span>{post.category}</span>
+             <span className="w-1 h-1 rounded-full bg-black/20" />
+             <span>{post.createdAt ? format(new Date(post.createdAt), "yyyy") : ""}</span>
           </div>
+          
+          <h1 className="text-5xl md:text-8xl font-display font-black leading-[1] tracking-tighter uppercase text-black">
+            {post.title}
+          </h1>
 
-          <div className="flex items-center justify-between border-y border-black/5 py-8">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white font-display font-black uppercase text-xs">S</div>
-              <div className="flex flex-col">
-                <span className="text-[10px] font-black uppercase tracking-widest text-black/20">The Voice of</span>
-                <span className="text-xs font-bold">{post.author || "Solitic Strategy"}</span>
-              </div>
-            </div>
-            <div className="text-[10px] font-black uppercase tracking-widest text-black/20 italic">
-               Briefing No. {post.id.slice(0, 4)}
-            </div>
+          <div className="flex items-center gap-6 pt-8 border-t border-black/5 text-[11px] font-black uppercase tracking-widest text-black/40">
+             <span>{post.author || "Principal Counsel"}</span>
+             <span>/</span>
+             <span>{post.readingTime || "5"} MIN READ</span>
           </div>
         </header>
 
-        <div className="prose prose-lg prose-black max-w-none minimal-content">
-          {contentOverride || <div dangerouslySetInnerHTML={{ __html: renderContent(post.content as unknown as JSONContent) }} />}
+        {post.coverImage && (
+          <figure className="mb-32">
+            <img 
+              src={post.coverImage} 
+              alt={String(post.title)} 
+              className="w-full h-auto object-contain max-h-[600px] rounded-xl bg-[#f9f9f9]"
+            />
+          </figure>
+        )}
+
+        <div 
+          className={cn("minimal-prose transition-all duration-700", selectedFontClass)}
+          style={{ fontFamily: selectedFontFamily }}
+        >
+           <div className="minimal-content">
+             {contentOverride || <div dangerouslySetInnerHTML={{ __html: renderContent(post.content) || '' }} />}
+           </div>
         </div>
 
-        <footer className="mt-40 pt-20 border-t border-black/5 space-y-32">
-          <div className="flex flex-wrap gap-3">
-             {tags.map(tag => (
-               <span key={tag} className="text-[10px] font-black uppercase tracking-widest px-4 py-2 border border-black/5 hover:bg-black hover:text-white transition-all cursor-pointer">
-                 {tag.trim()}
-               </span>
-             ))}
-          </div>
-
-          <div className="space-y-16">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-black">Curated Recommendations</h4>
-            <div className="grid grid-cols-1 gap-12">
-               {relatedPosts.slice(0, 3).map(rel => (
-                 <Link key={rel.id} href={`/blog/${rel.slug}`} className="group space-y-4">
-                   <div className="flex items-center gap-4">
-                     <span className="h-px w-8 bg-black/10 group-hover:bg-black group-hover:w-16 transition-all" />
-                     <span className="text-[9px] font-black text-black/20 uppercase tracking-widest">{rel.category}</span>
-                   </div>
-                   <h4 className="text-3xl font-display font-black text-black leading-tight">{rel.title}</h4>
-                 </Link>
-               ))}
-            </div>
-          </div>
+        <footer className="mt-40 pt-20 border-t border-black/5 flex justify-between items-center text-[10px] font-black uppercase tracking-[0.6em] opacity-20">
+          <span>Solitic Institutional Archive</span>
+          <span>End of File</span>
         </footer>
       </div>
 
       <style jsx global>{`
-        .minimal-content p {
-          font-family: var(--font-serif);
+        .minimal-content {
+          font-family: inherit;
           font-size: 1.25rem;
           line-height: 2;
           color: rgba(0,0,0,0.7);
-          margin-bottom: 2.5rem;
+        }
+        .minimal-content p {
+          margin-bottom: 3.5rem;
         }
         .minimal-content h2, .minimal-content h3 {
           font-family: var(--font-display);
           font-weight: 900;
-          font-style: italic;
+          text-transform: uppercase;
+          margin-top: 6rem;
+          margin-bottom: 2.5rem;
+          letter-spacing: -0.02em;
           color: black;
-          margin-top: 5rem;
-          margin-bottom: 2rem;
-          letter-spacing: -0.05em;
+          line-height: 1.1;
         }
-        .minimal-content h2 { font-size: 3rem; }
+        .minimal-content h2 { font-size: 3.5rem; }
         .minimal-content h3 { font-size: 2rem; }
         .minimal-content blockquote {
           border-left: 2px solid black;
           padding: 2rem 0 2rem 4rem;
           font-style: italic;
-          font-size: 1.5rem;
+          font-size: 2rem;
+          line-height: 1.5;
           color: black;
-          margin: 4rem 0;
+          margin: 6rem 0;
+          font-family: var(--font-display);
+          font-weight: 900;
         }
         .minimal-content img {
-          width: 100%;
-          border-radius: 0;
+          width: 100% !important;
+          border-radius: 0.5rem;
           margin: 6rem 0;
           border: 1px solid rgba(0,0,0,0.05);
         }
+        .minimal-content ul, .minimal-content ol {
+          margin-bottom: 3.5rem;
+          padding-left: 1.5rem;
+          border-left: 1px solid rgba(0,0,0,0.05);
+        }
+        .minimal-content li { margin-bottom: 1.5rem; }
+
+        .font-poppins { font-family: var(--font-poppins) !important; }
+        .font-merriweather { font-family: var(--font-merriweather) !important; }
+        .font-mono-fira { font-family: var(--font-mono-fira) !important; }
       `}</style>
     </article>
   );
