@@ -25,6 +25,14 @@ export default async function AdminDashboard() {
   const recentPosts = await prisma.post.findMany({
     take: 10,
     orderBy: { updatedAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      status: true,
+      updatedAt: true,
+      tags: true,
+    }
   });
 
   const stats = [

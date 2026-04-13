@@ -19,4 +19,5 @@ export type BlogPost = Omit<Post, 'content' | 'excerpt'> & {
 export interface LayoutProps {
   post: BlogPost;
   relatedPosts: BlogPost[];
+  contentOverride?: React.ReactNode;
 }

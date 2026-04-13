@@ -19,12 +19,5 @@ export default async function EditPostPage(props: {
   // objects contain non-serializable properties.
   const serializedPost = JSON.parse(JSON.stringify(post));
 
-  return (
-    <div className="flex flex-col gap-12 animate-fade-in px-4">
-      <h1 className="text-4xl md:text-5xl font-display font-black tracking-tighter text-foreground">
-        Refine <span className="text-gold italic">Story.</span>
-      </h1>
-      <BlogEditor initialData={serializedPost} />
-    </div>
-  );
+  return <BlogEditor initialData={serializedPost} />;
 }
