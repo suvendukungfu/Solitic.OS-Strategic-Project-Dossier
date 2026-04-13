@@ -1,36 +1,34 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { slugify, cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import RichTextEditor from './rich-text-editor';
-import { JSONContent } from '@tiptap/react';
+import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
+import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
+import Placeholder from '@tiptap/extension-placeholder';
 import { Post } from '@prisma/client';
 import { 
-  ArrowLeft, 
-  Trash2, 
-  Image as ImageIcon, 
-  Hash, 
-  FileText,
-  Clock,
-  Upload,
-  Save,
-  Rocket,
-  Eye,
-  Trash,
-  Layout as LayoutIcon,
-  Tag,
-  Type,
-  CheckCircle2,
-  Minimize2,
-  Maximize2,
-  Palette,
-  X
+  ArrowLeft, Clock, Upload, Save, Rocket, Eye, Trash, 
+  Layout as LayoutIcon, Tag, Type, Palette, X, ChevronRight, Settings,
+  Database, Zap, FileText, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BlogPostUI } from '../blog/BlogPostUI';
+import { EditorToolbar } from './Toolbar';
+
+// Import Layouts directly for the Canvas
+import EditorialLayout from '../blog/layouts/Editorial';
+import MagazineLayout from '../blog/layouts/Magazine';
+import MinimalLayout from '../blog/layouts/Minimal';
+import ReportLayout from '../blog/layouts/Report';
+import SpotlightLayout from '../blog/layouts/Spotlight';
+import { BlogPost } from '../blog/types';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,19 +41,27 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const CATEGORIES = [
-  "Corporate Strategy",
-  "Institutional Policy",
-  "Market Intelligence",
-  "Legal Framework",
-  "General Advisory"
+  "Finance",
+  "Technology",
+  "Strategy",
+  "Leadership",
+  "Startups"
+];
+
+const FONTS = [
+  { id: 'inter', name: 'Inter (Default)', class: 'font-sans' },
+  { id: 'playfair', name: 'Playfair (Editorial)', class: 'font-display' },
+  { id: 'poppins', name: 'Poppins (Modern)', class: 'font-poppins' },
+  { id: 'merriweather', name: 'Merriweather (Reading)', class: 'font-merriweather' },
+  { id: 'fira', name: 'Fira Code (Accent)', class: 'font-mono' }
 ];
 
 const LAYOUT_VARIANTS = [
-  { id: 'editorial', name: 'Editorial', desc: 'Standard newspaper-inspired grid with a strong cover story focus.', image: 'https://images.unsplash.com/photo-1585241936939-be4099591252?q=80&w=600&auto=format&fit=crop' },
-  { id: 'magazine', name: 'Magazine', desc: 'Immersive full-screen imagery and ultra-modern typography headers.', image: 'https://images.unsplash.com/photo-1544640808-32ca72ac7f67?q=80&w=600&auto=format&fit=crop' },
-  { id: 'minimal', name: 'Minimal', desc: 'Distraction-free focus on clarity, white space, and elegant serifs.', image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=600&auto=format&fit=crop' },
-  { id: 'report', name: 'Report', desc: 'Technical documentation layout with data sidebars and docketing.', image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=600&auto=format&fit=crop' },
-  { id: 'spotlight', name: 'Spotlight', desc: 'Dramatic vertical scroll with spotlighting on key legal citations.', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop' }
+  { id: 'editorial', name: 'Newspaper', image: 'https://images.unsplash.com/photo-1585241936939-be4099591252?q=80&w=600&auto=format&fit=crop' },
+  { id: 'magazine', name: 'Visual', image: 'https://images.unsplash.com/photo-1544640808-32ca72ac7f67?q=80&w=600&auto=format&fit=crop' },
+  { id: 'minimal', name: 'Clean', image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?q=80&w=600&auto=format&fit=crop' },
+  { id: 'report', name: 'Corporate', image: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=600&auto=format&fit=crop' },
+  { id: 'spotlight', name: 'Feature', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=600&auto=format&fit=crop' }
 ];
 
 const DEFAULT_JSON_CONTENT = { type: 'doc', content: [{ type: 'paragraph' }] };
@@ -63,417 +69,357 @@ const DEFAULT_JSON_CONTENT = { type: 'doc', content: [{ type: 'paragraph' }] };
 export default function BlogEditor({ initialData }: { initialData?: Post }) {
   const router = useRouter();
   
-  // Safe accessor for extended Prisma fields
-  const safeData = initialData as (Post & { layoutType?: string; fonts?: string }) | undefined;
-
+  // State 
   const [postId, setPostId] = useState<string | null>(initialData?.id ?? null);
   const [title, setTitle] = useState(initialData?.title || '');
-  const [category, setCategory] = useState(initialData?.category || 'General Advisory');
+  const [category, setCategory] = useState(initialData?.category || 'Strategy');
   const [slug, setSlug] = useState(initialData?.slug || '');
-  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(
-    initialData?.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT"
-  );
+  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(initialData?.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT");
   const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
   const [tags, setTags] = useState(initialData?.tags || '');
-  const [layoutType, setLayoutType] = useState<string>(safeData?.layoutType || 'editorial');
-  const [fonts, setFonts] = useState<string>(safeData?.fonts || 'Inter');
+  const [layoutType, setLayoutType] = useState<string>((initialData as any)?.layoutType || 'editorial');
+  const [author, setAuthor] = useState(initialData?.author || 'Principal Counsel');
+  const [selectedFont, setSelectedFont] = useState('inter');
 
-  // Rich Text Contents
-  const parseContent = (data: unknown): JSONContent => {
-    if (!data) return DEFAULT_JSON_CONTENT;
-    if (typeof data === 'string') {
-      try { return JSON.parse(data) as JSONContent; } catch { return DEFAULT_JSON_CONTENT; }
-    }
-    return data as JSONContent;
-  };
-
-  const [content, setContent] = useState(parseContent(initialData?.content));
-  const [excerpt, setExcerpt] = useState(parseContent(initialData?.excerpt));
-
-  // Saving States
+  // Logic states
   const [isSaving, setIsSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<'Saved' | 'Unsaved' | 'Syncing'>('Saved');
-  const [isZenMode, setIsZenMode] = useState(false);
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [showConfig, setShowConfig] = useState(true);
 
-  // Refs for logic
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Editor Implementation
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Image,
+      Link.configure({ openOnClick: false }),
+      Underline,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Placeholder.configure({ 
+        placeholder: ({ node }) => {
+          if (node.type.name === 'heading') return 'Write your headline...';
+          return 'Start writing here...';
+        }
+      }),
+    ],
+    content: initialData?.content ? (typeof initialData.content === 'string' ? JSON.parse(initialData.content) : initialData.content) : DEFAULT_JSON_CONTENT,
+    immediatelyRender: false,
+  });
 
-  const onSave = useCallback(async (isAutosave = false) => {
+  const onSave = useCallback(async () => {
     if (!title) {
-      if (!isAutosave) toast.error('Strategic Deficit: Manuscript Title required');
-      return;
+       toast.error('Post Title is required');
+       return;
     }
     
     setIsSaving(true);
-    setSaveStatus('Syncing');
-    
     try {
-      const data = {
+      const payload = {
         id: postId,
         title,
         category,
         slug: slug || slugify(title),
-        content,
-        excerpt,
+        content: editor?.getJSON() || {},
         coverImage,
         tags,
         status,
         layoutType,
-        fonts,
+        author,
+        createdAt: initialData?.createdAt || new Date().toISOString(),
       };
 
       if (postId) {
-        await axios.put(`/api/posts/byId/${postId}`, data);
+        await axios.put(`/api/posts/byId/${postId}`, payload);
       } else {
-        const res = await axios.post('/api/posts', data);
-        const createdPost = res.data?.data ?? res.data;
-        if (createdPost?.id) {
-          setPostId(createdPost.id);
-          window.history.replaceState(null, '', `/admin/posts/${createdPost.id}`);
+        const res = await axios.post('/api/posts', payload);
+        const created = res.data?.data ?? res.data;
+        if (created?.id) {
+          setPostId(created.id);
+          window.history.replaceState(null, '', `/admin/posts/${created.id}`);
         }
       }
-      
-      setSaveStatus('Saved');
-      if (!isAutosave) toast.success(`Institutional Synchronization Complete`);
-    } catch (error: unknown) {
-      let message = 'Strategic Uplink Failure';
-      if (axios.isAxiosError(error)) {
-        message = error.response?.data?.message || message;
-      } else if (error instanceof Error) {
-        message = error.message;
-      }
-      if (!isAutosave) toast.error(message);
-      setSaveStatus('Unsaved');
+      toast.success('Saved successfully');
+    } catch (err: unknown) {
+      console.error("Save Error:", err);
+      toast.error('Failed to save changes');
     } finally {
       setIsSaving(false);
     }
-  }, [postId, title, category, slug, content, excerpt, coverImage, tags, status, layoutType, fonts]);
-
-  // Autosave Logic
-  useEffect(() => {
-    if (!postId || saveStatus === 'Saved' || saveStatus === 'Syncing') return;
-    const timer = setTimeout(() => onSave(true), 5000);
-    return () => clearTimeout(timer);
-  }, [onSave, postId, saveStatus]);
+  }, [postId, title, category, slug, editor, coverImage, tags, status, layoutType, author, initialData]);
 
   const onDelete = async () => {
     if (!postId) return;
-    setIsDeleting(true);
     try {
       await axios.delete(`/api/posts/byId/${postId}`);
-      toast.success('Manuscript Retracted');
+      toast.success('Draft deleted');
       router.push('/admin/posts');
     } catch {
-      toast.error('Retraction Blocked');
-    } finally {
-      setIsDeleting(false);
+      toast.error('Failed to delete draft');
     }
   };
 
-  const handleAssetUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setIsUploadingImage(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await axios.post('/api/upload', formData);
-      if (res.data?.url) {
-        setCoverImage(res.data.url);
-        setSaveStatus('Unsaved');
-        toast.success('Visual Asset Authorized');
-      }
-    } catch {
-      toast.error('Asset Authorization Failed');
-    } finally {
-      setIsUploadingImage(false);
-      event.target.value = '';
+  const currentPostForCanvas = useMemo(() => ({
+    id: postId || 'draft',
+    title,
+    category,
+    slug: slug || slugify(title),
+    coverImage,
+    tags,
+    status,
+    layoutType,
+    author,
+    createdAt: initialData?.createdAt || new Date().toISOString(),
+    content: editor?.getJSON() || {},
+    excerpt: "",
+    updatedAt: new Date(),
+    readingTime: 5,
+    featured: false,
+    trending: false,
+    viewCount: 0,
+    deletedAt: null
+  }), [postId, title, category, slug, coverImage, tags, status, layoutType, author, editor, initialData]);
+
+  const renderCanvas = () => {
+    const props = { 
+      post: currentPostForCanvas as unknown as BlogPost, 
+      relatedPosts: [], 
+      contentOverride: (
+        <div className={cn("outline-none transition-all duration-300", 
+          selectedFont === 'inter' && "font-sans",
+          selectedFont === 'playfair' && "font-display",
+          selectedFont === 'poppins' && "font-poppins",
+          selectedFont === 'merriweather' && "font-merriweather",
+          selectedFont === 'fira' && "font-mono-fira"
+        )}>
+          <EditorContent editor={editor} />
+        </div>
+      )
+    };
+    
+    switch(layoutType) {
+      case 'magazine': return <MagazineLayout {...props} />;
+      case 'minimal': return <MinimalLayout {...props} />;
+      case 'report': return <ReportLayout {...props} />;
+      case 'spotlight': return <SpotlightLayout {...props} />;
+      default: return <EditorialLayout {...props} />;
     }
   };
-
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   return (
-    <div className={cn(
-      "flex flex-col mx-auto px-4 md:px-0 transition-all duration-1000",
-      (isZenMode || isPreviewMode) ? "max-w-full" : "max-w-7xl pb-40"
-    )}>
-      
-      {/* Precision Controls */}
-      <div className="fixed right-10 bottom-10 z-[100] flex flex-col gap-4">
-        <button 
-          onClick={() => onSave(false)}
-          disabled={isSaving}
-          className="w-14 h-14 rounded-2xl bg-[#C2A46D] text-[#0F0F12] shadow-2xl flex items-center justify-center hover:scale-105 transition-all disabled:opacity-50"
-          title="Save Manuscript"
-        >
-          {isSaving ? <Clock className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-        </button>
-        <button 
-          onClick={() => setIsPreviewMode(!isPreviewMode)}
-          className={cn(
-            "w-14 h-14 rounded-2xl flex items-center justify-center transition-all",
-            isPreviewMode ? "bg-white text-black" : "bg-[#1A1A1A] border border-white/5 text-white/40 hover:text-white"
-          )}
-          title="Toggle Premium Preview"
-        >
-          <Eye className="w-5 h-5" />
-        </button>
-        {postId && (
-          <button onClick={() => setShowDeleteConfirm(true)} className="w-14 h-14 rounded-2xl bg-red-950/20 text-red-500 border border-red-500/10 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
-            <Trash className="w-5 h-5" />
+    <div className="flex h-screen bg-[#050505] text-white overflow-hidden selection:bg-gold selection:text-black">
+      {/* Top Bar */}
+      <div className="fixed top-0 left-0 right-0 h-20 bg-black/80 backdrop-blur-2xl border-b border-white/5 z-[100] flex items-center justify-between px-8">
+        <div className="flex items-center gap-6">
+          <button onClick={() => router.push('/admin/posts')} className="p-3 hover:bg-white/5 rounded-xl transition-all">
+            <ArrowLeft className="w-5 h-5" />
           </button>
-        )}
-        <button 
-          onClick={() => setIsZenMode(!isZenMode)} 
-          className="w-14 h-14 rounded-2xl bg-[#1A1A1A] border border-white/5 text-white/40 flex items-center justify-center hover:text-white transition-all"
-        >
-          {isZenMode ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
-        </button>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gold italic underline decoration-gold/30">Draft Studio</span>
+            <span className="text-xs font-medium text-white/40">{postId ? 'Edit Post' : 'Create New Post'}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <EditorToolbar editor={editor} className="hidden lg:flex" />
+          
+          <div className="h-8 w-px bg-white/10 hidden lg:block" />
+
+          {/* Font Selector */}
+          <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
+            <Type className="w-3.5 h-3.5 text-gold/60" />
+            <select 
+              value={selectedFont} 
+              onChange={e => setSelectedFont(e.target.value)}
+              className="bg-transparent text-[10px] font-black uppercase tracking-widest text-white/70 focus:outline-none cursor-pointer"
+            >
+              {FONTS.map(f => <option key={f.id} value={f.id} className="bg-black text-white">{f.name}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex flex-col items-end text-[9px] font-black uppercase tracking-widest text-white/20 mr-4">
+            <span className={cn(isSaving && "text-gold animate-pulse")}>{isSaving ? 'Saving...' : 'Status'}</span>
+            <span className="text-white/40">{status === 'PUBLISHED' ? 'Live' : 'Draft'}</span>
+          </div>
+          
+          <button 
+            onClick={onSave}
+            disabled={isSaving}
+            className="flex items-center gap-3 px-8 py-3 bg-gold text-black rounded-2xl font-black uppercase text-[10px] tracking-widest hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+          >
+            {isSaving ? <Zap className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </button>
+
+          <button onClick={() => setShowConfig(!showConfig)} className={cn("p-3 rounded-xl transition-all", showConfig ? "bg-white/10 text-white" : "text-white/40")}>
+            <Settings className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        {isPreviewMode ? (
-          <motion.div
-            key="preview"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="w-full h-full min-h-screen bg-black rounded-[3rem] overflow-hidden border border-white/10 shadow-4xl my-10"
+      {/* Main Layout Canvas */}
+      <main className="flex-1 overflow-y-auto pt-20 pb-40 scrollbar-hide bg-[#0c0c0c]">
+        {renderCanvas()}
+      </main>
+
+      {/* Config Sidebar */}
+      <AnimatePresence>
+        {showConfig && (
+          <motion.aside 
+            initial={{ x: 400 }}
+            animate={{ x: 0 }}
+            exit={{ x: 400 }}
+            className="w-[400px] border-l border-white/5 bg-[#080808] flex flex-col p-8 pt-28 space-y-12 overflow-y-auto z-50"
           >
-             <div className="bg-white/5 p-4 flex items-center justify-between border-b border-white/10 px-8">
-               <span className="text-[10px] font-black uppercase tracking-[0.5em] text-gold">Live Tactical Preview</span>
-               <button onClick={() => setIsPreviewMode(false)} className="text-white/40 hover:text-white flex items-center gap-2 text-[10px] font-black uppercase">
-                 Exit Preview <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
-               </button>
-             </div>
-             <div className="zoom-[0.8] origin-top">
-                <BlogPostUI post={{ ...initialData, title, category, slug, content, excerpt, coverImage, tags, layoutType }} relatedPosts={[]} />
-             </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="editor"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <AnimatePresence>
-              {!isZenMode && (
-                <motion.header 
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="flex flex-col gap-10 mb-20 pt-10"
-                >
-                  <div className="flex flex-col gap-6">
-                    <button 
-                      onClick={() => router.push('/admin/posts')}
-                      className="flex items-center gap-3 text-white/20 hover:text-[#C2A46D] transition-colors group w-fit"
-                    >
-                      <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.4em] italic">Archive</span>
-                    </button>
-                    <h1 className="text-5xl md:text-8xl font-display font-black text-white tracking-tighter italic">
-                      The <span className="text-[#C2A46D]">Manuscript.</span>
-                    </h1>
-                  </div>
-
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-8 bg-[#1A1A1A]/80 border border-white/5 rounded-[2.5rem] backdrop-blur-3xl shadow-3xl">
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 px-2">Principal Title</label>
-                      <input 
-                        value={title}
-                        onChange={(e) => { setTitle(e.target.value); setSaveStatus('Unsaved'); }}
-                        placeholder="Manuscript Name..."
-                        className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-5 text-2xl font-display font-black text-white placeholder:text-white/5 focus:outline-none focus:border-[#C2A46D]/20 transition-all"
-                      />
-                    </div>
-
-                    <div className="space-y-4">
-                      <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 px-2">Strategic Classification</label>
-                      <select 
-                        value={category}
-                        onChange={(e) => { setCategory(e.target.value); setSaveStatus('Unsaved'); }}
-                        className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-5 text-lg font-display font-black text-white focus:outline-none focus:border-[#C2A46D]/20 transition-all appearance-none"
-                      >
-                        {CATEGORIES.map(c => <option key={c} value={c} className="bg-[#1A1A1A] text-white">{c}</option>)}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="relative group overflow-hidden rounded-[2.5rem] border border-white/5 bg-[#1A1A1A]/40 min-h-[300px] flex items-center justify-center">
-                    {coverImage ? (
-                      <>
-                        <img src={coverImage} className="absolute inset-0 w-full h-full object-cover opacity-50 grayscale hover:grayscale-0 transition-all duration-700" alt="Cover" />
-                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-all" />
-                        <button 
-                          onClick={() => fileInputRef.current?.click()}
-                          className="relative z-10 px-8 py-4 bg-white/10 backdrop-blur-md rounded-2xl text-[10px] font-black uppercase tracking-widest text-white border border-white/10 hover:bg-gold hover:text-black transition-all"
-                        >
-                          Change Cover Art
-                        </button>
-                      </>
-                    ) : (
-                      <button 
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex flex-col items-center gap-4 text-white/20 hover:text-gold transition-all"
-                      >
-                        <Upload className="w-12 h-12" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em]">Authorize Cover Asset</span>
-                      </button>
-                    )}
-                    <input type="file" ref={fileInputRef} onChange={handleAssetUpload} className="hidden" accept="image/*" />
-                    {isUploadingImage && (
-                      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-20 flex items-center justify-center">
-                        <Clock className="w-8 h-8 text-gold animate-spin" />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between p-6 bg-[#1A1A1A]/40 border border-white/5 rounded-3xl">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "w-2 h-2 rounded-full",
-                        saveStatus === 'Saved' ? "bg-green-500 animate-pulse" : "bg-amber-500 animate-bounce"
-                      )} />
-                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 italic">
-                        {saveStatus === 'Saved' ? 'Synchronized' : 'Sync Pending...'}
-                      </span>
-                    </div>
-                    <button 
-                      onClick={() => { setStatus(status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED'); setSaveStatus('Unsaved'); }}
-                      className={cn(
-                        "flex items-center gap-2 px-6 py-2.5 rounded-full border transition-all text-[10px] font-black uppercase tracking-widest",
-                        status === 'PUBLISHED' ? "bg-[#C2A46D]/10 border-[#C2A46D]/20 text-[#C2A46D]" : "bg-white/5 border-white/10 text-white/40"
-                      )}
-                    >
-                      <Rocket className="w-3.5 h-3.5" />
-                      {status === 'PUBLISHED' ? 'Institutional Live' : 'Drafting Flow'}
-                    </button>
-                  </div>
-                </motion.header>
-              )}
-            </AnimatePresence>
-
-            <div className="space-y-32">
-              {!isZenMode && (
-                <section className="space-y-12">
-                  <div className="flex items-center gap-4">
-                    <Palette className="w-5 h-5 text-[#C2A46D]" />
-                    <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30">Editorial Designs</h2>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                    {LAYOUT_VARIANTS.map((l) => (
-                      <button 
-                        key={l.id}
-                        onClick={() => { setLayoutType(l.id); setSaveStatus('Unsaved'); }}
-                        className={cn(
-                          "group relative flex flex-col overflow-hidden rounded-[2rem] border transition-all duration-500",
-                          layoutType === l.id ? "border-[#C2A46D] bg-[#C2A46D]/5 ring-4 ring-[#C2A46D]/10" : "border-white/5 bg-white/[0.02] hover:border-white/10"
-                        )}
-                      >
-                        <div className="relative w-full aspect-[16/10] overflow-hidden">
-                          <img 
-                            src={l.image} 
-                            alt={l.name}
-                            className={cn(
-                              "w-full h-full object-cover transition-all duration-700",
-                              layoutType === l.id ? "scale-105 brightness-110" : "opacity-60 grayscale-[0.5] group-hover:grayscale-0 group-hover:opacity-100"
-                            )}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F12] via-[#0F0F12]/20 to-transparent" />
-                        </div>
-                        <div className="p-5 relative z-10 text-left">
-                          <span className={cn(
-                            "text-[10px] font-black uppercase tracking-[0.2em] block mb-1",
-                            layoutType === l.id ? "text-[#C2A46D]" : "text-white/40"
-                          )}>
-                            {l.name}
-                          </span>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              <section className="space-y-24">
-                {!isZenMode && (
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3">
-                      <FileText className="w-4 h-4 text-[#C2A46D]/60" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">Executive Abstract</span>
-                    </div>
-                    <RichTextEditor 
-                      content={excerpt} 
-                      onChange={(json) => { setExcerpt(json); setSaveStatus('Unsaved'); }}
-                      placeholder="Draft the executive summary here..."
-                      minHeight="150px"
-                      className="font-serif italic text-lg"
-                    />
-                  </div>
-                )}
-
-                <div className="space-y-12 pb-20">
-                  {!isZenMode && (
-                    <div className="flex items-center gap-3">
-                      <Type className="w-4 h-4 text-[#C2A46D]/60" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20">The Manuscript</span>
-                    </div>
-                  )}
-                  
-                  <div className={cn(
-                    "transition-all duration-1000",
-                    isZenMode ? "bg-transparent" : "p-12 md:p-24 bg-[#1A1A1A]/50 border border-white/5 rounded-[4rem] shadow-3xl backdrop-blur-3xl"
-                  )}>
-                    {isZenMode && (
-                      <div className="flex flex-col items-center gap-8 mb-24 max-w-4xl mx-auto text-center">
-                        <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#C2A46D]/40 italic">Zen Operational Workspace</span>
-                        <h1 className="text-4xl md:text-6xl font-display font-black text-white italic tracking-tighter leading-tight">{title || 'Awaiting Nomenclature...'}</h1>
-                        <div className="w-20 h-px bg-white/10" />
-                      </div>
-                    )}
-                    
-                    <RichTextEditor 
-                      content={content} 
-                      onChange={(json) => { setContent(json); setSaveStatus('Unsaved'); }}
-                      placeholder="Architecture the main narrative..."
-                      minHeight={isZenMode ? "800px" : "600px"}
-                      className="text-xl"
-                    />
-                  </div>
-                </div>
-              </section>
+            {/* Layout Switcher */}
+            <div className="space-y-6">
+               <div className="flex items-center gap-3">
+                 <LayoutIcon className="w-4 h-4 text-gold" />
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Select Layout</h3>
+               </div>
+               <div className="grid grid-cols-5 gap-2">
+                 {LAYOUT_VARIANTS.map(l => (
+                   <button 
+                     key={l.id}
+                     onClick={() => setLayoutType(l.id)}
+                     className={cn(
+                       "aspect-square rounded-xl border-2 transition-all flex items-center justify-center overflow-hidden",
+                       layoutType === l.id ? "border-gold bg-gold/10" : "border-white/5 hover:border-white/20 grayscale opacity-40"
+                     )}
+                     title={l.name}
+                   >
+                     <img src={l.image} className="w-full h-full object-cover" />
+                   </button>
+                 ))}
+               </div>
             </div>
-          </motion.div>
+
+            {/* Simple Fields */}
+            <div className="space-y-8">
+               <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 px-2 flex items-center gap-2">
+                    <Type className="w-3 h-3" /> Post Title
+                  </label>
+                  <input 
+                    value={title} 
+                    onChange={e => setTitle(e.target.value)}
+                    placeholder="Write your headline..."
+                    className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-xl font-display font-black text-white focus:outline-none focus:border-gold/20 transition-all placeholder:text-white/10"
+                  />
+               </div>
+
+               <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 px-2 flex items-center gap-2">
+                    <Globe className="w-3 h-3" /> Category
+                  </label>
+                  <select 
+                    value={category} 
+                    onChange={e => setCategory(e.target.value)}
+                    className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 font-bold text-white focus:outline-none appearance-none cursor-pointer"
+                  >
+                    {CATEGORIES.map(c => <option key={c} value={c} className="bg-[#080808]">{c}</option>)}
+                  </select>
+               </div>
+
+               <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 px-2 flex items-center gap-2">
+                    <Tag className="w-3 h-3" /> Author
+                  </label>
+                  <input 
+                    value={author} 
+                    onChange={e => setAuthor(e.target.value)}
+                    className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 font-bold text-white focus:outline-none"
+                  />
+               </div>
+            </div>
+
+            {/* Asset Management */}
+            <div className="space-y-6">
+               <div className="flex items-center gap-3">
+                 <Palette className="w-4 h-4 text-gold" />
+                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Cover Image</h3>
+               </div>
+               <div className="relative aspect-video bg-white/5 border border-white/5 rounded-3xl overflow-hidden group cursor-pointer" onClick={() => (document.getElementById('fileInput') as HTMLInputElement).click()}>
+                  {coverImage ? <img src={coverImage} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all" /> : <div className="absolute inset-0 flex items-center justify-center text-white/20"><Upload className="w-8 h-8" /></div>}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-white">Upload Image</span>
+                  </div>
+                  <input type="file" id="fileInput" hidden onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setIsUploadingImage(true);
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      const res = await axios.post('/api/upload', formData);
+                      setCoverImage(res.data.url);
+                      toast.success('Image uploaded');
+                    } catch {
+                      toast.error('Upload failed');
+                    } finally { setIsUploadingImage(false); }
+                  }} />
+                  {isUploadingImage && <div className="absolute inset-0 bg-black/80 flex items-center justify-center"><Zap className="w-6 h-6 animate-spin text-gold" /></div>}
+               </div>
+            </div>
+
+            {/* Action Bar */}
+            <div className="flex items-center justify-between p-6 bg-white/[0.02] border border-white/5 rounded-3xl mt-auto">
+               <button 
+                  onClick={() => setStatus(status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED')}
+                  className={cn(
+                    "flex items-center gap-3 px-6 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all",
+                    status === 'PUBLISHED' ? "bg-gold/10 border-gold/20 text-gold shadow-lg shadow-gold/5" : "bg-white/5 border-white/10 text-white/40"
+                  )}
+                >
+                  <Rocket className="w-3.5 h-3.5" />
+                  {status === 'PUBLISHED' ? 'Live' : 'Draft'}
+                </button>
+                {postId && (
+                  <button onClick={() => setShowDeleteConfirm(true)} className="p-3 text-white/20 hover:text-red-500 transition-colors">
+                    <Trash className="w-5 h-5" />
+                  </button>
+                )}
+            </div>
+          </motion.aside>
         )}
       </AnimatePresence>
 
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent className="bg-[#121212] border border-white/10 text-white rounded-[2rem] p-10 max-w-lg backdrop-blur-3xl">
+        <AlertDialogContent className="bg-[#0c0c0c] border border-white/10 text-white rounded-[2rem]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-3xl font-display font-black italic tracking-tighter mb-4 text-red-500">Acknowledge Retraction?</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/40 text-lg leading-relaxed italic">
-              This manuscript will be permanently purged from the strategic archive. This action is definitive.
-            </AlertDialogDescription>
+            <AlertDialogTitle className="font-display font-black text-red-500 uppercase italic">Delete Draft?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/40 font-serif italic">This action cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-10 gap-4">
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10 rounded-xl px-8 py-6">Cancel Protocol</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={onDelete}
-              className="bg-red-500 text-white hover:bg-red-600 rounded-xl px-8 py-6 font-bold"
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Purging..." : "Retract Manuscript"}
-            </AlertDialogAction>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-0 text-white">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={onDelete} className="bg-red-500 hover:bg-red-600 text-white font-bold px-8">Delete Forever</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <style jsx global>{`
+        .font-poppins { font-family: 'Poppins', sans-serif; }
+        .font-merriweather { font-family: 'Merriweather', serif; }
+        .font-mono-fira { font-family: var(--font-mono-fira), monospace; }
+        
+        .ProseMirror {
+          min-height: 200px;
+        }
+        .ProseMirror:focus {
+          outline: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .ProseMirror p.is-editor-empty:first-child::before {
+          content: attr(data-placeholder);
+          float: left;
+          color: #adb5bd;
+          pointer-events: none;
+          height: 0;
+        }
+      `}</style>
     </div>
   );
 }
