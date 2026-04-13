@@ -100,9 +100,9 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
                <img 
                  src={post.coverImage} 
                  alt={String(post.title)} 
-                 className="w-full h-auto object-contain max-h-[800px] rounded-[2.5rem] filter grayscale hover:grayscale-0 transition-all duration-[3s]"
+                 className="w-full h-auto object-contain max-h-[800px] rounded-[2.5rem] transition-all duration-500 group-hover:scale-[1.03] group-hover:brightness-[1.05] group-hover:contrast-[1.05]"
                />
-               <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-40" />
+               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none" />
             </div>
           </motion.figure>
         )}
@@ -207,14 +207,14 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
           width: 100% !important;
           border-radius: 4rem;
           margin: 10rem 0;
-          filter: grayscale(1) brightness(0.6);
-          transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+          filter: brightness(0.9) contrast(0.9);
+          transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           border: 1px solid rgba(255,255,255,0.05);
           box-shadow: 0 50px 100px rgba(0,0,0,0.8);
         }
         .spotlight-content img:hover {
-          filter: grayscale(0) brightness(1);
-          transform: scale(1.05);
+          filter: brightness(1.05) contrast(1.05);
+          transform: scale(1.03);
         }
         .spotlight-content ul, .spotlight-content ol {
           margin: 6rem auto;
