@@ -112,6 +112,7 @@ export const MOCKUP_POSTS = [
     readingTime: 4,
     status: "PUBLISHED",
     tags: "Startup Law, Risk",
+    layoutType: "minimal",
     content: JSON.stringify({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Speed is not a proxy for stability.' }] }] }),
   },
   {
@@ -127,6 +128,7 @@ export const MOCKUP_POSTS = [
     readingTime: 4,
     status: "PUBLISHED",
     tags: "AI, Legal Tech",
+    layoutType: "report",
     content: JSON.stringify({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Efficiency should not come at the cost of enforceability.' }] }] }),
   }
 ];
