@@ -42,10 +42,10 @@ export const Color = Extension.create({
   addCommands() {
     return {
       setColor: (color: string) => ({ chain }: { chain: () => unknown }) => {
-        return (chain() as unknown as { setMark: (n: string, a: unknown) => { run: () => void } }).setMark('textStyle', { color }).run();
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { run: () => boolean } }).setMark('textStyle', { color }).run();
       },
       unsetColor: () => ({ chain }: { chain: () => unknown }) => {
-        return (chain() as unknown as { setMark: (n: string, a: unknown) => { removeEmptyTextStyle: () => { run: () => void } } }).setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { removeEmptyTextStyle: () => { run: () => boolean } } }).setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
       },
     };
   },
@@ -78,10 +78,10 @@ export const FontSize = Extension.create({
   addCommands() {
     return {
       setFontSize: (fontSize: string) => ({ chain }: { chain: () => unknown }) => {
-        return (chain() as unknown as { setMark: (n: string, a: unknown) => { run: () => void } }).setMark('textStyle', { fontSize }).run();
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { run: () => boolean } }).setMark('textStyle', { fontSize }).run();
       },
       unsetFontSize: () => ({ chain }: { chain: () => unknown }) => {
-        return (chain() as unknown as { setMark: (n: string, a: unknown) => { removeEmptyTextStyle: () => { run: () => void } } }).setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { removeEmptyTextStyle: () => { run: () => boolean } } }).setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
       },
     };
   },
