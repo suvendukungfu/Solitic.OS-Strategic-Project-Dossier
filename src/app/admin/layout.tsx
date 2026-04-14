@@ -136,6 +136,67 @@ export default function AdminLayout({
           </div>
         )}
       </main>
+
+      <style jsx global>{`
+        /* ──── INSTITUTIONAL EDITORIAL GLOBAL (ADMIN + STUDIO) ──── */
+        
+        .ProseMirror, .tiptap-content { outline: none !important; }
+
+        /* 1. Mark Consistency (Bold, Italic, Color) */
+        .ProseMirror strong, .tiptap-content strong,
+        .magazine-content strong, .editorial-body strong { 
+          font-weight: 900 !important; 
+          color: inherit !important; 
+        }
+        
+        .ProseMirror em, .tiptap-content em,
+        .magazine-content em, .editorial-body em { 
+          font-style: italic !important; 
+          color: inherit !important; 
+        }
+
+        /* 2. Global List Synchronization (Fixed Ladder + Invisible Numbers) */
+        .ProseMirror ul, .tiptap-content ul,
+        .editorial-body ul, .magazine-content ul { 
+          list-style-type: square !important; 
+          list-style-position: inside !important;
+          margin-left: 0 !important; 
+          margin-bottom: 2rem !important; 
+          padding-left: 1.5rem !important;
+          display: block !important;
+          width: 100% !important;
+        }
+        
+        .ProseMirror ol, .tiptap-content ol,
+        .editorial-body ol, .magazine-content ol { 
+          list-style-type: decimal !important; 
+          list-style-position: inside !important;
+          margin-left: 0 !important; 
+          margin-bottom: 2rem !important; 
+          padding-left: 1.5rem !important;
+          display: block !important;
+          width: 100% !important;
+        }
+
+        .ProseMirror li, .tiptap-content li,
+        .magazine-content li, .editorial-body li { 
+          display: list-item !important;
+          width: 100% !important;
+          clear: both !important;
+          margin-bottom: 0.75rem !important; 
+          line-height: 1.8 !important;
+          text-align: left !important;
+        }
+
+        /* 3. Placeholder Styling */
+        .ProseMirror p.is-editor-empty:first-child::before {
+          content: attr(data-placeholder);
+          float: left;
+          color: rgba(255, 255, 255, 0.15);
+          pointer-events: none;
+          height: 0;
+        }
+      `}</style>
     </div>
   );
 }

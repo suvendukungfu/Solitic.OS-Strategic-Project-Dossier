@@ -203,7 +203,9 @@ export default function EditorialLayout({ post, relatedPosts, contentOverride }:
           list-style-type: square;
           border-left: 1px solid rgba(0,0,0,0.1);
         }
-        .editorial-body li { margin-bottom: 1rem; font-weight: 600; }
+        .editorial-body li, .editorial-body .ProseMirror li { margin-bottom: 2rem; font-weight: 600; display: list-item; }
+        .editorial-body strong, .editorial-body .ProseMirror strong { font-weight: 900 !important; color: inherit !important; }
+        .editorial-body em, .editorial-body .ProseMirror em { font-style: italic !important; color: inherit !important; }
 
         .font-poppins { font-family: var(--font-poppins) !important; }
         .font-merriweather { font-family: var(--font-merriweather) !important; }

@@ -179,12 +179,15 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
         }
         .magazine-content ul, .magazine-content ol {
           margin-bottom: 4rem;
-          padding: 4rem;
+          padding: 3rem 4rem;
           background: rgba(255,255,255,0.02);
           border-radius: 2.5rem;
           border: 1px solid rgba(255,255,255,0.05);
+          display: block !important;
         }
-        .magazine-content li { margin-bottom: 2rem; color: #fff; font-weight: 600; }
+        .magazine-content li, .magazine-content .ProseMirror li { margin-bottom: 2rem; color: inherit; font-weight: 600; display: list-item; }
+        .magazine-content strong, .magazine-content .ProseMirror strong { font-weight: 900 !important; color: inherit !important; }
+        .magazine-content em, .magazine-content .ProseMirror em { font-style: italic !important; color: inherit !important; }
 
         .font-poppins { font-family: var(--font-poppins) !important; }
         .font-merriweather { font-family: var(--font-merriweather) !important; }

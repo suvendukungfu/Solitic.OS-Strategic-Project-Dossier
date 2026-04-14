@@ -88,7 +88,9 @@ export const FontSize = Extension.create({
 });
 
 export const TIPTAP_EXTENSIONS = [
-  StarterKit,
+  StarterKit.configure({
+    heading: { levels: [1, 2, 3] },
+  }),
   Image,
   Link.configure({
     openOnClick: false,
@@ -118,7 +120,7 @@ export const TIPTAP_EXTENSIONS = [
 /**
  * Centralized content renderer ensuring consistency between Draft Studio and Website.
  */
-export function renderContent(json: JSONContent | string | null): string {
+export function renderContent(json: JSONContent | string | null | Record<string, unknown>): string {
   if (!json) return '';
   
   let content: JSONContent;
@@ -126,16 +128,25 @@ export function renderContent(json: JSONContent | string | null): string {
     try {
       content = JSON.parse(json) as JSONContent;
     } catch (error) {
-      return json || '';
+      return `<p>${json}</p>`; // Wrap raw strings in paragraphs for consistent layout
     }
   } else {
     content = json as JSONContent;
   }
   
+  // High-Fidelity Guard: generateHTML throws if node type is missing or invalid.
+  // An empty object {} or an object without 'type' is not a valid Tiptap node.
+  if (typeof content === 'object' && content !== null && !content.type) {
+    return '';
+  }
+  
   try {
+    // Explicitly pass all extensions to generateHTML for parity
     return generateHTML(content, TIPTAP_EXTENSIONS) || '';
   } catch (e) {
-    return typeof json === 'string' ? json : '';
+    console.error("Content Rendering Failure:", e);
+    // Fallback for fragmented content or unknown nodes
+    return '';
   }
 }
 

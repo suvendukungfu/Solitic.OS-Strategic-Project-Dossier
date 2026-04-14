@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { slugify, cn } from '@/lib/utils';
@@ -84,7 +84,10 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showConfig, setShowConfig] = useState(true);
 
-  // Editor Implementation
+  // Persistence Refs (Senior Level)
+  const lastSavedRef = useRef<string>("");
+  const isAutoSavingRef = useRef(false);
+
   // Editor Implementation
   const editor = useEditor({
     extensions: [
@@ -100,20 +103,27 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none focus:outline-none min-h-[500px] selection:bg-gold/20 selection:text-gold selection:shadow-[0_0_15px_rgba(194,164,109,0.3)]',
+        class: 'prose prose-invert max-w-none focus:outline-none min-h-[500px] selection:bg-gold/30 selection:text-white',
       },
     },
-    onUpdate: () => {
-      // Logic for debounced auto-save can be added here
+    onUpdate: ({ editor }) => {
+      // Logic for any real-time tracking can go here
     }
   });
 
-  // Debounced Auto-save
+  // Debounced Auto-save (Redundant check to save bandwidth & server load)
   useEffect(() => {
-    if (!editor || !title) return;
-    const timer = setTimeout(() => {
-      // Silently save draft in background if it's already a draft
-      if (postId && status === 'DRAFT') {
+    if (!editor || !title || !postId || status !== 'DRAFT' || isSaving || isAutoSavingRef.current) return;
+
+    const currentContent = JSON.stringify(editor.getJSON());
+    const compositeState = `${title}-${category}-${coverImage}-${layoutType}-${selectedFont}-${currentContent}`;
+    
+    // Only trigger if something actually changed since last save
+    if (compositeState === lastSavedRef.current) return;
+
+    const timer = setTimeout(async () => {
+      isAutoSavingRef.current = true;
+      try {
         const payload = {
           id: postId,
           title,
@@ -127,21 +137,28 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
           fonts: selectedFont,
           author,
         };
-        axios.put(`/api/posts/byId/${postId}`, payload).catch(() => {});
+        await axios.put(`/api/posts/byId/${postId}`, payload);
+        lastSavedRef.current = compositeState;
+      } catch (err) {
+        console.warn("Autosave skipped due to transient network state");
+      } finally {
+        isAutoSavingRef.current = false;
       }
     }, 5000); // 5 sec debounce
 
     return () => clearTimeout(timer);
-  }, [editor, title, category, slug, coverImage, tags, status, layoutType, selectedFont, author, postId]);
+  }, [editor, title, category, slug, coverImage, tags, status, layoutType, selectedFont, author, postId, isSaving]);
 
   const onSave = useCallback(async () => {
     if (!title) {
-       toast.error('Post Title is required');
+       toast.error('Post Title Required', { description: 'Institutional reports require a valid headline.' });
        return;
     }
     
+    if (isSaving) return;
+    
     setIsSaving(true);
-    const saveToast = toast.loading('Synchronizing with Solitic DB...');
+    const saveToast = toast.loading('Synchronizing Dossier...');
     
     try {
       const payload = {
@@ -169,14 +186,21 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
           window.history.replaceState(null, '', `/admin/posts/${created.id}`);
         }
       }
+      
+      // Update the "Last Saved" snapshot
+      lastSavedRef.current = `${title}-${category}-${coverImage}-${layoutType}-${selectedFont}-${JSON.stringify(editor?.getJSON())}`;
+      
       toast.success('Dossier Synced', { id: saveToast });
     } catch (err: unknown) {
-      console.error("Save Error:", err);
-      toast.error('Sync Failed', { id: saveToast });
+      console.error("Critical Sync Failure:", err);
+      toast.error('Sync Error', { 
+        id: saveToast,
+        description: 'Check your network connection and try again.'
+      });
     } finally {
       setIsSaving(false);
     }
-  }, [postId, title, category, slug, editor, coverImage, tags, status, layoutType, selectedFont, author, initialData]);
+  }, [postId, title, category, slug, editor, coverImage, tags, status, layoutType, selectedFont, author, initialData, isSaving]);
 
   const onDelete = async () => {
     if (!postId) return;
@@ -221,92 +245,96 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
     return () => clearTimeout(timer);
   }, [currentPostForCanvas]);
 
-  const renderCanvas = () => {
-    const selectedFontFamily = selectedFont.toLowerCase() === 'playfair' ? 'var(--font-display)' :
-                              selectedFont.toLowerCase() === 'poppins' ? 'var(--font-poppins)' :
-                              selectedFont.toLowerCase() === 'merriweather' ? 'var(--font-merriweather)' :
-                              selectedFont.toLowerCase() === 'fira' ? 'var(--font-mono-fira)' :
-                              'var(--font-sans)';
+  const selectedFontFamily = selectedFont.toLowerCase() === 'playfair' ? 'var(--font-display)' :
+                            selectedFont.toLowerCase() === 'poppins' ? 'var(--font-poppins)' :
+                            selectedFont.toLowerCase() === 'merriweather' ? 'var(--font-merriweather)' :
+                            selectedFont.toLowerCase() === 'fira' ? 'var(--font-mono-fira)' :
+                            'var(--font-sans)';
 
+  // Render the editor content in a stable, persistent container
+  const persistentEditor = useMemo(() => {
+    if (!editor) return null;
+    return (
+      <div 
+        className={cn("outline-none transition-all duration-300 relative min-h-[500px] py-4", 
+          selectedFont === 'inter' && "font-sans",
+          selectedFont === 'playfair' && "font-display",
+          selectedFont === 'poppins' && "font-poppins",
+          selectedFont === 'merriweather' && "font-merriweather",
+          selectedFont === 'fira' && "font-mono-fira"
+        )}
+        style={{ fontFamily: selectedFontFamily }}
+      >
+        <div className="absolute inset-0 pointer-events-none z-[1000]">
+           {/* Production-Grade Custom Bubble Menu */}
+           <AnimatePresence>
+             {!editor.state.selection.empty && (
+               <motion.div
+                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                 animate={{ opacity: 1, scale: 1, y: 0 }}
+                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                 className="pointer-events-auto absolute flex items-center gap-1 bg-[#121212]/95 backdrop-blur-3xl border border-white/10 p-1.5 rounded-xl shadow-2xl"
+                 style={{
+                    left: editor.view.coordsAtPos(editor.state.selection.from).left - (editor.view.dom.getBoundingClientRect().left || 0) + 20,
+                    top: editor.view.coordsAtPos(editor.state.selection.from).top - (editor.view.dom.getBoundingClientRect().top || 0) - 50,
+                 }}
+               >
+                <button onClick={() => editor.chain().focus().toggleBold().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('bold') ? "text-gold" : "text-white/60")}>
+                  <Bold className="w-4 h-4" />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleItalic().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('italic') ? "text-gold" : "text-white/60")}>
+                  <Italic className="w-4 h-4" />
+                </button>
+                <div className="w-px h-5 bg-white/10 mx-1" />
+                <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('heading', { level: 1 }) ? "text-gold" : "text-white/60")}>
+                  <Heading1 className="w-4 h-4" />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('heading', { level: 2 }) ? "text-gold" : "text-white/60")}>
+                  <Heading2 className="w-4 h-4" />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleBlockquote().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('blockquote') ? "text-gold" : "text-white/60")}>
+                  <Quote className="w-4 h-4" />
+                </button>
+               </motion.div>
+             )}
+           </AnimatePresence>
+
+           {/* Production-Grade Custom Floating Menu */}
+           <AnimatePresence>
+             {editor.state.selection.empty && editor.state.doc.resolve(editor.state.selection.from).parent.content.size === 0 && (
+               <motion.div
+                 initial={{ opacity: 0, x: -10 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 exit={{ opacity: 0, x: -10 }}
+                 className="pointer-events-auto absolute flex items-center gap-1 bg-[#121212]/95 backdrop-blur-3xl border border-white/10 p-1.5 rounded-xl shadow-2xl"
+                 style={{
+                    left: editor.view.coordsAtPos(editor.state.selection.from).left - (editor.view.dom.getBoundingClientRect().left || 0) - 60,
+                    top: editor.view.coordsAtPos(editor.state.selection.from).top - (editor.view.dom.getBoundingClientRect().top || 0) - 5,
+                 }}
+               >
+                 <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('bulletList') ? "text-gold" : "text-white/60")}>
+                   <List className="w-4 h-4" />
+                 </button>
+                <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('orderedList') ? "text-gold" : "text-white/60")}>
+                  <ListOrdered className="w-4 h-4" />
+                </button>
+                <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('codeBlock') ? "text-gold" : "text-white/60")}>
+                  <Code className="w-4 h-4" />
+                </button>
+               </motion.div>
+             )}
+           </AnimatePresence>
+        </div>
+        <EditorContent editor={editor} />
+      </div>
+    );
+  }, [editor, selectedFont, selectedFontFamily]);
+
+  const renderCanvas = () => {
     const props = { 
       post: previewData as unknown as BlogPost, 
       relatedPosts: [], 
-      contentOverride: (
-        <div 
-          className={cn("outline-none transition-all duration-300 relative min-h-[500px] py-4", 
-            selectedFont === 'inter' && "font-sans",
-            selectedFont === 'playfair' && "font-display",
-            selectedFont === 'poppins' && "font-poppins",
-            selectedFont === 'merriweather' && "font-merriweather",
-            selectedFont === 'fira' && "font-mono-fira"
-          )}
-          style={{ fontFamily: selectedFontFamily }}
-        >
-          {editor && (
-            <div className="absolute inset-0 pointer-events-none z-[1000]">
-               {/* Custom Bubble Menu (Text Selection) */}
-               <AnimatePresence>
-                 {!editor.state.selection.empty && (
-                   <motion.div
-                     initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                     animate={{ opacity: 1, scale: 1, y: 0 }}
-                     exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                     className="pointer-events-auto absolute flex items-center gap-1 bg-black/90 backdrop-blur-xl border border-white/10 p-1.5 rounded-xl shadow-2xl overflow-hidden"
-                     style={{
-                        left: editor.view.coordsAtPos(editor.state.selection.from).left - 20,
-                        top: editor.view.coordsAtPos(editor.state.selection.from).top - 60,
-                     }}
-                   >
-                    <button onClick={() => editor.chain().focus().toggleBold().run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('bold') ? "text-gold" : "text-white/60")}>
-                      <Bold className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => editor.chain().focus().toggleItalic().run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('italic') ? "text-gold" : "text-white/60")}>
-                      <Italic className="w-3.5 h-3.5" />
-                    </button>
-                    <div className="w-px h-4 bg-white/10 mx-1" />
-                    <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('heading', { level: 1 }) ? "text-gold" : "text-white/60")}>
-                      <Heading1 className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('heading', { level: 2 }) ? "text-gold" : "text-white/60")}>
-                      <Heading2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => editor.chain().focus().toggleBlockquote().run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('blockquote') ? "text-gold" : "text-white/60")}>
-                      <Quote className="w-3.5 h-3.5" />
-                    </button>
-                   </motion.div>
-                 )}
-               </AnimatePresence>
-
-               {/* Custom Floating Menu (Empty Line) */}
-               <AnimatePresence>
-                 {editor.state.selection.empty && editor.state.doc.resolve(editor.state.selection.from).parent.content.size === 0 && (
-                   <motion.div
-                     initial={{ opacity: 0, x: -10 }}
-                     animate={{ opacity: 1, x: 0 }}
-                     exit={{ opacity: 0, x: -10 }}
-                     className="pointer-events-auto absolute flex items-center gap-1 bg-black/90 backdrop-blur-xl border border-white/10 p-1.5 rounded-xl shadow-2xl overflow-hidden"
-                     style={{
-                        left: editor.view.coordsAtPos(editor.state.selection.from).left - 40,
-                        top: editor.view.coordsAtPos(editor.state.selection.from).top - 10,
-                     }}
-                   >
-                     <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('bulletList') ? "text-gold" : "text-white/60")}>
-                      <List className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('orderedList') ? "text-gold" : "text-white/60")}>
-                      <ListOrdered className="w-3.5 h-3.5" />
-                    </button>
-                    <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={cn("p-2 rounded-lg transition-colors hover:bg-white/10", editor.isActive('codeBlock') ? "text-gold" : "text-white/60")}>
-                      <Code className="w-3.5 h-3.5" />
-                    </button>
-                   </motion.div>
-                 )}
-               </AnimatePresence>
-            </div>
-          )}
-          <EditorContent editor={editor} />
-        </div>
-      )
+      contentOverride: persistentEditor
     };
     
     switch(layoutType) {
@@ -511,34 +539,6 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
         </AlertDialogContent>
       </AlertDialog>
 
-      <style jsx global>{`
-        .font-poppins { font-family: 'Poppins', sans-serif; }
-        .font-merriweather { font-family: 'Merriweather', serif; }
-        .font-mono-fira { font-family: var(--font-mono-fira), monospace; }
-        
-/* Custom Writing Styles */
-        .ProseMirror {
-          min-height: 500px;
-          outline: none !important;
-        }
-        .ProseMirror p {
-          line-height: 1.8;
-          margin-bottom: 1.5rem;
-        }
-        .ProseMirror p.is-editor-empty:first-child::before {
-          content: attr(data-placeholder);
-          float: left;
-          color: rgba(255,255,255,0.15);
-          pointer-events: none;
-          height: 0;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .editorial-body.text-left .ProseMirror {
-          text-align: left !important;
-        }
-      `}</style>
     </div>
   );
 }
