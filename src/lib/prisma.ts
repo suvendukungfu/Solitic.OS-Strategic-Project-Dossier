@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { MOCKUP_POSTS } from "./blog-data";
 import { env } from "./env";
 
@@ -139,7 +139,7 @@ const virtualPrisma = {
   }
 };
 
-import { PrismaClient } from '@prisma/client';
+
 
 // ─────────── ARCHITECTURAL HARDENING: SINGLETON PRISMA ───────────
 
