@@ -496,8 +496,13 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
                       const res = await axios.post('/api/upload', formData);
                       setCoverImage(res.data.url);
                       toast.success('Image uploaded');
-                    } catch {
-                      toast.error('Upload failed');
+                    } catch (err) {
+                      let errorMsg = 'Upload failed';
+                      if (err && typeof err === 'object' && 'response' in err) {
+                        const axiosError = err as { response?: { data?: { message?: string } } };
+                        errorMsg = axiosError.response?.data?.message || errorMsg;
+                      }
+                      toast.error(errorMsg);
                     } finally { setIsUploadingImage(false); }
                   }} />
                   {isUploadingImage && <div className="absolute inset-0 bg-black/80 flex items-center justify-center"><Zap className="w-6 h-6 animate-spin text-gold" /></div>}

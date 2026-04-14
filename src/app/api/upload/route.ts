@@ -11,6 +11,19 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
+  // Validate Cloudinary Configuration
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    console.error("❌ CLOUDINARY ERROR: Missing configuration keys in environment.");
+    return NextResponse.json({ 
+      message: "Visual infrastructure not configured. Please check Netlify environment variables.",
+      missing_keys: {
+        cloud_name: !process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: !process.env.CLOUDINARY_API_KEY,
+        api_secret: !process.env.CLOUDINARY_API_SECRET
+      }
+    }, { status: 500 });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File;
