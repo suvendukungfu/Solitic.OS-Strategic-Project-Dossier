@@ -139,49 +139,34 @@ const virtualPrisma = {
   }
 };
 
-let PrismaClientClass: unknown = null;
+import { PrismaClient } from '@prisma/client';
 
-const getPrismaClientClass = async () => {
-  if (PrismaClientClass) return PrismaClientClass as { new (options: unknown): PrismaClient };
-  try {
-    const { PrismaClient } = await import('@prisma/client');
-    PrismaClientClass = PrismaClient;
-    return PrismaClient;
-  } catch (e) {
-    return null;
-  }
-};
+// ─────────── ARCHITECTURAL HARDENING: SINGLETON PRISMA ───────────
 
-const prismaClientSingleton = async () => {
-  const Client = await getPrismaClientClass();
-  if (!Client) return null;
-  try {
-    return new (Client as { new (options: unknown): PrismaClient })({
-      datasources: { db: { url: env.DATABASE_URL } },
-      log: ['error'],
-    });
-  } catch (e) {
-    return null; 
-  }
+const prismaClientSingleton = () => {
+  return new PrismaClient({
+    datasources: { db: { url: env.DATABASE_URL } },
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
 };
 
 declare global {
-  var prismaGlobal: undefined | Promise<PrismaClient | null>;
+  var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-const actualPrismaPromise = globalThis.prismaGlobal ?? prismaClientSingleton();
-if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = actualPrismaPromise;
+const actualPrisma = globalThis.prismaGlobal ?? prismaClientSingleton();
+
+if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = actualPrisma;
 
 export const prisma = new Proxy({} as Record<string, unknown>, {
   get(_, prop: string) {
     const virtualModel = (virtualPrisma as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>)[prop];
 
-    // Handle the top-level model access (e.g. prisma.post)
     if (virtualModel) {
       return new Proxy(virtualModel as object, {
         get(target, method: string) {
           return async (...args: unknown[]) => {
-            const client = await actualPrismaPromise;
+            const client = actualPrisma;
             // Use unknown double-cast to safely access dynamic properties without 'any'
             const model = client 
               ? (client as unknown as Record<string, Record<string, (...a: unknown[]) => Promise<unknown>>>)[prop] 
