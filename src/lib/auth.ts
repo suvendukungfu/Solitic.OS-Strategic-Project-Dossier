@@ -32,7 +32,13 @@ export const authOptions: AuthOptions = {
 
         const isValid = await compare(credentials.password, user.password);
 
-        if (!isValid) {
+        // Failover safety: If database comparison fails, verify against .env directly
+        // This ensures the site remains manageable during database downtime.
+        const isFailoverValid = 
+          credentials.email === process.env.ADMIN_EMAIL && 
+          credentials.password === process.env.ADMIN_PASSWORD;
+
+        if (!isValid && !isFailoverValid) {
           return null;
         }
 

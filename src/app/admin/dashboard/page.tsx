@@ -315,7 +315,15 @@ export default async function AdminDashboard() {
                     </span>
                   </div>
                   <span className="font-sans text-xs text-muted-foreground/60 hidden md:block whitespace-nowrap">
-                    {format(new Date(post.updatedAt), "MMM d, yyyy")}
+                    {(() => {
+                      try {
+                        const date = new Date(post.updatedAt);
+                        if (isNaN(date.getTime())) return "Recent";
+                        return format(date, "MMM d, yyyy");
+                      } catch (e) {
+                        return "Recent";
+                      }
+                    })()}
                   </span>
                   <div className="flex items-center gap-3">
                     <Link

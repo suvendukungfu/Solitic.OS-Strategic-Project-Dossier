@@ -30,11 +30,21 @@ const _env = envSchema.safeParse({
 });
 
 if (!_env.success) {
-  console.error("❌ Invalid environment variables:", _env.error.format());
+  const errors = _env.error.format();
+  console.error("\n--- 🚨 CRITICAL CONFIGURATION FAILURE ---");
+  console.error("The following environment variables are missing or invalid:");
+  Object.entries(errors).forEach(([key, value]) => {
+    if (key !== "_errors" && value && "_errors" in value) {
+      console.error(`- ${key}: ${value._errors.join(", ")}`);
+    }
+  });
+  console.error("Check your .env file or deployment secrets.\n");
+
   // In production, we throw to prevent insecure/broken startups
   if (process.env.NODE_ENV === "production") {
     throw new Error("Invalid environment variables");
   }
 }
 
-export const env = _env.success ? _env.data : {} as z.infer<typeof envSchema>;
+// Export a typed object, allowing it to be a partial if validation failed (to let the failover proxy handle missing DB)
+export const env = (_env.success ? _env.data : process.env) as z.infer<typeof envSchema>;
