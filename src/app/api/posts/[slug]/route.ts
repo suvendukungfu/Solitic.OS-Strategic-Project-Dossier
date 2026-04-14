@@ -9,7 +9,7 @@ import { calculateReadingTime } from '../../../../lib/utils';
 
 // Public: GET single post by slug
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const resolvedParams = await params;
