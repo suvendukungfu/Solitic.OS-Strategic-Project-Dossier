@@ -61,6 +61,8 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
       <div className="flex items-center gap-2 pr-3 border-r border-white/5">
         <select 
           value=""
+          onChange={(e) => {
+            if (!e.target.value) return;
             // Cast to unknown first to safely call custom extension methods
             (editor.chain().focus() as unknown as { setFontSize: (size: string) => any }).setFontSize(e.target.value).run();
             // Force focus back to editor after a micro-task
