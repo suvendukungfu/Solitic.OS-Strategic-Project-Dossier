@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { renderContent } from "@/lib/tiptap";
 import { LayoutProps } from "../types";
-import { ArrowRight, Star, Sparkles, User, Info } from "lucide-react";
+import { Star, Sparkles, User, Info } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 

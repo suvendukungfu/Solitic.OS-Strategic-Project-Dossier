@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { Mail, Phone, MapPin, Linkedin, Twitter, Instagram } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Instagram } from "lucide-react";
 import { motion } from "framer-motion";
 import { SoliticLogo } from "./SoliticLogo";
 
