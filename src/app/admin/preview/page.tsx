@@ -5,14 +5,16 @@ import { BlogPostUI } from '@/components/blog/BlogPostUI';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
+import { BlogPost } from '@/components/blog/types';
+
 export default function PreviewPage() {
-  const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
+  const [draft, setDraft] = useState<BlogPost | null>(null);
 
   useEffect(() => {
     const data = localStorage.getItem('solitic_draft_preview');
     if (data) {
       try {
-        setDraft(JSON.parse(data));
+        setDraft(JSON.parse(data) as BlogPost);
       } catch (e) {
         console.error("Institutional Preview Corruption:", e);
       }
@@ -28,7 +30,7 @@ export default function PreviewPage() {
              <span className="text-gold font-black">?</span>
            </div>
            <span>Awaiting strategic manuscript data for preview...</span>
-        </div>
+         </div>
         <Footer />
       </div>
     );
@@ -43,7 +45,7 @@ export default function PreviewPage() {
             Strategic Preview / Non-Persistent
          </div>
       </div>
-      <BlogPostUI post={draft as any} relatedPosts={[]} />
+      <BlogPostUI post={draft} relatedPosts={[]} />
     </div>
   );
 }
