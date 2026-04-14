@@ -491,11 +491,23 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
                     if (!file) return;
                     setIsUploadingImage(true);
                     try {
+                      const sigRes = await axios.get('/api/upload/signature');
+                      const { signature, timestamp, apiKey, cloudName } = sigRes.data;
+
                       const formData = new FormData();
                       formData.append('file', file);
-                      const res = await axios.post('/api/upload', formData);
-                      setCoverImage(res.data.url);
-                      toast.success('Image uploaded');
+                      formData.append('api_key', apiKey);
+                      formData.append('timestamp', timestamp);
+                      formData.append('signature', signature);
+                      formData.append('folder', 'solitic-assets');
+
+                      const uploadRes = await axios.post(
+                        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+                        formData
+                      );
+
+                      setCoverImage(uploadRes.data.secure_url);
+                      toast.success('High-fidelity image synchronized');
                     } catch (err) {
                       let errorMsg = 'Upload failed';
                       if (err && typeof err === 'object' && 'response' in err) {
