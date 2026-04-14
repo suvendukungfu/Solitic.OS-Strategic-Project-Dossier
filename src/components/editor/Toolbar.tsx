@@ -4,7 +4,7 @@ import { Editor } from '@tiptap/react';
 import { 
   Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, 
   List, ListOrdered, Heading1, Heading2, Heading3, Quote, 
-  Undo, Redo, Image, Link, Type, Palette
+  Undo, Redo, Image, Link
 } from "lucide-react";
 import { cn } from '@/lib/utils';
 

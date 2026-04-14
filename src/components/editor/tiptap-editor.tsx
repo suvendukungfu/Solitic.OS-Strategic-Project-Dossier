@@ -11,7 +11,7 @@ import { Post } from '@prisma/client';
 import { 
   ArrowLeft, Clock, Upload, Save, Rocket, Eye, Trash, 
   Layout as LayoutIcon, Tag, Type, Palette, X, ChevronRight, Settings,
-  Database, Zap, FileText, Globe, Bold, Italic, List, ListOrdered, Code, Quote, Heading1, Heading2 
+  Zap, Globe, Bold, Italic, List, ListOrdered, Code, Quote, Heading1, Heading2 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EditorToolbar } from './Toolbar';
