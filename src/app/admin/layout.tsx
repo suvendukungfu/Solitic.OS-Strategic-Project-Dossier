@@ -36,7 +36,6 @@ export default function AdminLayout({
   }
 
   const isEditor = pathname?.includes('/admin/posts/new') || (pathname?.includes('/admin/posts/') && pathname !== '/admin/posts');
-  const isMessages = pathname?.includes('/admin/messages');
 
   return (
     <div className="flex min-h-screen bg-background text-foreground selection:bg-gold selection:text-charcoal font-body">
