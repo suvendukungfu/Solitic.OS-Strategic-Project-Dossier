@@ -9,7 +9,6 @@ import {
   Eye,
   Edit3,
   TrendingUp,
-  LayoutDashboard,
   ExternalLink,
 } from "lucide-react";
 import * as motion from "framer-motion/client";

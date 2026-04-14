@@ -41,7 +41,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
           >
             <img 
               src={post.coverImage} 
-              className="w-full h-full object-cover opacity-60 grayscale-[0.5] hover:grayscale-0 transition-all duration-[3000ms]" 
+              className="w-full h-full object-cover opacity-60 grayscale-[0.5] hover:grayscale-0 transition-all duration-3000" 
               alt={String(post.title)} 
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#080808]/40 to-transparent" />

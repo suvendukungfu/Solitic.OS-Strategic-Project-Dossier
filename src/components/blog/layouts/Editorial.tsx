@@ -83,7 +83,7 @@ export default function EditorialLayout({ post, relatedPosts, contentOverride }:
               <img
                 src={post.coverImage}
                 alt={String(post.title)}
-                className="w-full grayscale brightness-95 hover:grayscale-0 transition-all duration-[2000ms] object-contain max-h-[800px] bg-[#f8f8f8] rounded-xl"
+                className="w-full grayscale brightness-95 hover:grayscale-0 transition-all duration-2000 object-contain max-h-[800px] bg-[#f8f8f8] rounded-xl"
               />
             </div>
             <figcaption className="mt-8 text-[11px] uppercase tracking-[0.5em] leading-relaxed font-sans font-black text-center opacity-30 italic">

@@ -130,6 +130,10 @@ export default {
         '3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
         '4xl': '0 50px 100px -20px rgba(0, 0, 0, 0.4)',
       },
+      transitionDuration: {
+        '2000': '2000ms',
+        '3000': '3000ms',
+      },
     },
   },
   plugins: [tailwindcssAnimate, typography],

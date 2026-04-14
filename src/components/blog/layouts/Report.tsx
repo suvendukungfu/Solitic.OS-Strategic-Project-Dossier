@@ -8,7 +8,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export default function ReportLayout({ post, relatedPosts, contentOverride }: LayoutProps) {
-  const tags = post.tags ? String(post.tags).split(",").filter(Boolean) : [];
 
   // Font System Resolver
   const getFontClass = (font?: string) => {
@@ -105,7 +104,7 @@ export default function ReportLayout({ post, relatedPosts, contentOverride }: La
               <img 
                 src={post.coverImage} 
                 alt={String(post.title)} 
-                className="w-full h-auto object-contain max-h-[800px] grayscale group-hover:grayscale-0 transition-all duration-[2s]"
+                className="w-full h-auto object-contain max-h-[800px] grayscale group-hover:grayscale-0 transition-all duration-2000"
               />
             </figure>
           )}
