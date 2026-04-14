@@ -34,7 +34,7 @@ export default function SpotlightLayout({ post, relatedPosts, contentOverride }:
       {/* 1. ATMOSPHERIC HERO */}
       <section className="relative min-h-[100vh] w-full flex items-center justify-center overflow-hidden py-40">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-radial-gradient from-gold/10 via-transparent to-transparent opacity-40 blur-[150px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-gold/10 via-transparent to-transparent opacity-40 blur-[150px]" />
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
         </div>
 
