@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, FileText, PenTool, LogOut, Settings, Sparkles, Mail } from 'lucide-react';
+import { LayoutDashboard, FileText, PenTool, LogOut, Mail } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { motion } from 'framer-motion';
 
