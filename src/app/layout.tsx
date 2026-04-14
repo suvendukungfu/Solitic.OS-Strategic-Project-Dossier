@@ -1,4 +1,5 @@
 import './globals.css';
+import '@/styles/editorial.css';
 import { 
   Inter, 
   Playfair_Display, 

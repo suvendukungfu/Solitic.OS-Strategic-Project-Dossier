@@ -12,6 +12,8 @@ import Typography from '@tiptap/extension-typography'
 import { FontFamily } from '@tiptap/extension-font-family'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { JSONContent } from '@tiptap/react'
+import BubbleMenu from '@tiptap/extension-bubble-menu'
+import FloatingMenu from '@tiptap/extension-floating-menu'
 
 import { Extension } from '@tiptap/core';
 
@@ -115,6 +117,8 @@ export const TIPTAP_EXTENSIONS = [
   FontFamily,
   FontSize,
   Color,
+  BubbleMenu,
+  FloatingMenu,
 ];
 
 /**

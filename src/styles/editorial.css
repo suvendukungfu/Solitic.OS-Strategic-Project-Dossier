@@ -1,0 +1,167 @@
+/* Solitic Institutional Editorial Styling Engine (v2.0)
+   SENIOR LEVEL: UNIFIED RENDERING ARCHITECTURE
+   This system replaces Tailwind Typography (prose) to ensure 
+   100% parity between Draft Studio and Live Publication.
+*/
+
+/* 1. RESET & DEEP SELECTORS (Targets both Static HTML and Editor) */
+.solitic-content, .ProseMirror {
+  outline: none !important;
+  tab-size: 4;
+}
+
+/* Ensure strong/em display correctly in all environments */
+.solitic-content strong, .ProseMirror strong {
+  font-weight: 900 !important;
+  color: inherit !important;
+}
+
+.solitic-content em, .ProseMirror em {
+  font-style: italic !important;
+  color: inherit !important;
+}
+
+/* Core Paragraph Spacing */
+.solitic-content p, .ProseMirror p {
+  margin-bottom: 2.25rem;
+  line-height: 1.85;
+}
+
+/* 2. LAYOUT: EDITORIAL (Newspaper) - LIGHT MODE */
+.editorial-body, .editorial-content, .editorial-body .ProseMirror, .editorial-content .ProseMirror {
+  color: rgba(0, 0, 0, 0.9) !important;
+  background-color: transparent;
+}
+
+.editorial-body h2, .editorial-content h2, .editorial-body .ProseMirror h2, .editorial-content .ProseMirror h2 {
+  font-size: 4rem;
+  margin: 6rem 0 2.5rem 0;
+  border-bottom: 6px solid black;
+  padding-bottom: 1.25rem;
+  color: #000 !important;
+}
+
+.editorial-body h3, .editorial-content h3, .editorial-body .ProseMirror h3, .editorial-content .ProseMirror h3 {
+  font-size: 2.5rem;
+  margin: 4.5rem 0 2rem 0;
+  border-bottom: 3.5px solid black;
+  padding-bottom: 0.75rem;
+  color: #000 !important;
+}
+
+.editorial-body blockquote, .editorial-content blockquote, .editorial-body .ProseMirror blockquote, .editorial-content .ProseMirror blockquote {
+  border-top: 2.5px solid black;
+  border-bottom: 2.5px solid black;
+  padding: 4.5rem 3rem;
+  font-size: 2.75rem;
+  text-align: center;
+  text-transform: uppercase;
+  color: #000 !important;
+  font-style: italic;
+  font-weight: 900;
+  margin: 6.5rem 0;
+}
+
+/* Lists for Editorial */
+.editorial-body ul, .editorial-content ul, .editorial-body .ProseMirror ul, .editorial-content .ProseMirror ul {
+  list-style-type: square !important;
+  padding-left: 2.5rem;
+  margin-bottom: 3.5rem;
+}
+
+.editorial-body ol, .editorial-content ol, .editorial-body .ProseMirror ol, .editorial-content .ProseMirror ol {
+  list-style-type: decimal !important;
+  padding-left: 2.5rem;
+  margin-bottom: 3.5rem;
+}
+
+.editorial-body li, .editorial-content li, .editorial-body .ProseMirror li, .editorial-content .ProseMirror li {
+  margin-bottom: 1.25rem;
+  padding-left: 0.5rem;
+}
+
+/* 3. LAYOUT: MAGAZINE (Cinematic) - DARK MODE */
+.magazine-body, .magazine-content, .magazine-body .ProseMirror, .magazine-content .ProseMirror {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.magazine-body h2, .magazine-content h2, .magazine-body .ProseMirror h2, .magazine-content .ProseMirror h2 {
+  font-size: 5.5rem;
+  margin-top: 8.5rem;
+  margin-bottom: 3.5rem;
+  color: #FFF !important;
+  letter-spacing: -0.05em;
+}
+
+.magazine-body h3, .magazine-content h3, .magazine-body .ProseMirror h3, .magazine-content .ProseMirror h3 {
+  font-size: 3.25rem;
+  margin-top: 6.5rem;
+  margin-bottom: 2.5rem;
+  color: #FFF !important;
+}
+
+.magazine-body blockquote, .magazine-content blockquote, .magazine-body .ProseMirror blockquote, .magazine-content .ProseMirror blockquote {
+  padding: 7rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  color: #C2A46D !important;
+  font-size: 3.75rem;
+  text-align: center;
+  font-weight: 900;
+  font-display: italic;
+}
+
+/* Lists for Magazine */
+.magazine-body ul, .magazine-content ul, .magazine-body .ProseMirror ul, .magazine-content .ProseMirror ul {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2.5rem;
+  padding: 3.5rem 4.5rem;
+  list-style-type: disc !important;
+  margin-bottom: 4.5rem;
+}
+
+.magazine-body ol, .magazine-content ol, .magazine-body .ProseMirror ol, .magazine-content .ProseMirror ol {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2.5rem;
+  padding: 3.5rem 4.5rem;
+  list-style-type: decimal !important;
+  margin-bottom: 4.5rem;
+}
+
+/* 4. LAYOUT: REPORT (Corporate) - DARK MODE */
+.report-body, .report-content, .report-body .ProseMirror, .report-content .ProseMirror {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.report-body h2, .report-content h2, .report-body .ProseMirror h2, .report-content .ProseMirror h2 {
+  font-size: 3.75rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 1.75rem;
+  color: #FFF !important;
+}
+
+.report-body blockquote, .report-content blockquote, .report-body .ProseMirror blockquote, .report-content .ProseMirror blockquote {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 5.5rem;
+  border-left: 14px solid #C2A46D;
+  border-radius: 0 2.5rem 2.5rem 0;
+  color: #FFF !important;
+  font-size: 2.25rem;
+}
+
+/* 5. PLACEHOLDER & UTILITIES */
+.ProseMirror .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgba(150, 150, 150, 0.3);
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+/* Fix for forced black text in some editors */
+.ProseMirror * {
+  border-color: inherit;
+}

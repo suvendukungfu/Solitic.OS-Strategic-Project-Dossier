@@ -101,12 +101,12 @@ export default function EditorialLayout({ post, relatedPosts, contentOverride }:
             >
                <div className="max-w-[800px] mx-auto">
                  {contentOverride ? (
-                   <div className="editorial-body text-left">
+                   <div className="editorial-body solitic-content text-left">
                      {contentOverride}
                    </div>
                  ) : (
                    <div 
-                    className="editorial-body text-justify hyphens-auto drop-cap-newspaper"
+                    className="editorial-body solitic-content text-justify hyphens-auto drop-cap-newspaper"
                     dangerouslySetInnerHTML={{ __html: renderContent(post.content) || "" }} 
                    />
                  )}
@@ -129,8 +129,8 @@ export default function EditorialLayout({ post, relatedPosts, contentOverride }:
                  {relatedPosts.slice(0, 3).map(r => (
                    <Link href={`/blog/${r.slug}`} key={r.id} className="block group/item space-y-3">
                       <div className="flex items-center gap-4 text-gold text-[10px] font-black uppercase tracking-widest">
-                        <span>{r.category}</span>
-                        <ArrowRight className="w-3 h-3 group-hover/item:translate-x-2 transition-transform" />
+                         <span>{r.category}</span>
+                         <ArrowRight className="w-3 h-3 group-hover/item:translate-x-2 transition-transform" />
                       </div>
                       <h5 className="text-3xl font-display font-black leading-none group-hover/item:underline decoration-gold decoration-4 underline-offset-8">
                         {r.title}
@@ -142,75 +142,6 @@ export default function EditorialLayout({ post, relatedPosts, contentOverride }:
           </aside>
         </div>
       </div>
-
-      <style jsx global>{`
-        .editorial-body {
-          font-family: inherit;
-          font-size: 1.2rem;
-          line-height: 1.8;
-          color: rgba(0,0,0,0.9);
-        }
-        .editorial-body p {
-          margin-bottom: 2.5rem;
-        }
-        .drop-cap-newspaper p:first-of-type::first-letter {
-          float: left;
-          font-size: 7.5rem;
-          line-height: 0.7;
-          padding: 0.1em 0.15em 0 0;
-          font-family: var(--font-display);
-          font-weight: 900;
-          color: black;
-        }
-        .editorial-body h2, .editorial-body h3 {
-          font-family: var(--font-display);
-          font-weight: 900;
-          text-transform: uppercase;
-          margin: 6rem 0 2rem 0;
-          border-bottom: 6px solid black;
-          padding-bottom: 1rem;
-          letter-spacing: -0.04em;
-          color: black;
-          line-height: 1;
-        }
-        .editorial-body h2 { font-size: 4rem; }
-        .editorial-body h3 { font-size: 2.5rem; }
-        .editorial-body blockquote {
-          border-top: 2px solid black;
-          border-bottom: 2px solid black;
-          padding: 4rem 2rem;
-          font-style: italic;
-          font-size: 2.5rem;
-          font-family: var(--font-display);
-          font-weight: 900;
-          text-align: center;
-          margin: 6rem 0;
-          text-transform: uppercase;
-          line-height: 1.1;
-          letter-spacing: -0.02em;
-        }
-        .editorial-body img {
-          width: 100% !important;
-          border-radius: 0;
-          margin: 6rem 0;
-          border: 4px solid black;
-          padding: 1rem;
-          background: white;
-        }
-        .editorial-body ul, .editorial-body ol {
-          margin-bottom: 3rem;
-          padding-left: 2rem;
-          list-style-type: square;
-          border-left: 1px solid rgba(0,0,0,0.1);
-        }
-        .editorial-body li, .editorial-body .ProseMirror li { margin-bottom: 2rem; font-weight: 600; display: list-item; }
-        .editorial-body strong, .editorial-body .ProseMirror strong { font-weight: 900 !important; color: inherit !important; }
-        .editorial-body em, .editorial-body .ProseMirror em { font-style: italic !important; color: inherit !important; }
-
-        .font-poppins { font-family: var(--font-poppins) !important; }
-        .font-merriweather { font-family: var(--font-merriweather) !important; }
-        .font-mono-fira { font-family: var(--font-mono-fira) !important; }
-      `}</style>
     </article>
   );
 }

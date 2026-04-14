@@ -90,7 +90,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
           />
 
           <div 
-            className={cn("magazine-body max-w-[800px]", selectedFontClass)}
+            className={cn("magazine-body solitic-content max-w-[800px]", selectedFontClass)}
             style={{ fontFamily: selectedFontFamily }}
           >
              <div className="magazine-content">
@@ -133,66 +133,6 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
            </div>
         </aside>
       </div>
-
-      <style jsx global>{`
-        .magazine-content {
-          font-family: inherit;
-          font-size: 1.35rem;
-          line-height: 1.8;
-          color: rgba(255,255,255,0.6);
-        }
-        .magazine-content p {
-          margin-bottom: 3rem;
-        }
-        .magazine-content h2, .magazine-content h3 {
-          color: white;
-          font-family: var(--font-display);
-          font-weight: 900;
-          text-transform: uppercase;
-          margin-top: 8rem;
-          margin-bottom: 3rem;
-          letter-spacing: -0.04em;
-          line-height: 0.9;
-        }
-        .magazine-content h2 { font-size: 5rem; }
-        .magazine-content h3 { font-size: 3rem; }
-        .magazine-content blockquote {
-          padding: 6rem 0;
-          border-top: 1px solid rgba(255,255,255,0.1);
-          border-bottom: 1px solid rgba(255,255,255,0.1);
-          font-style: italic;
-          color: #C2A46D;
-          margin: 8rem 0;
-          font-size: 3.5rem;
-          font-family: var(--font-display);
-          font-weight: 900;
-          line-height: 1.1;
-          letter-spacing: -0.02em;
-          text-align: center;
-        }
-        .magazine-content img {
-          width: 100% !important;
-          border-radius: 3rem;
-          margin: 8rem 0;
-          border: 1px solid rgba(255,255,255,0.05);
-          box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-        }
-        .magazine-content ul, .magazine-content ol {
-          margin-bottom: 4rem;
-          padding: 3rem 4rem;
-          background: rgba(255,255,255,0.02);
-          border-radius: 2.5rem;
-          border: 1px solid rgba(255,255,255,0.05);
-          display: block !important;
-        }
-        .magazine-content li, .magazine-content .ProseMirror li { margin-bottom: 2rem; color: inherit; font-weight: 600; display: list-item; }
-        .magazine-content strong, .magazine-content .ProseMirror strong { font-weight: 900 !important; color: inherit !important; }
-        .magazine-content em, .magazine-content .ProseMirror em { font-style: italic !important; color: inherit !important; }
-
-        .font-poppins { font-family: var(--font-poppins) !important; }
-        .font-merriweather { font-family: var(--font-merriweather) !important; }
-        .font-mono-fira { font-family: var(--font-mono-fira) !important; }
-      `}</style>
     </article>
   );
 }

@@ -6,6 +6,7 @@ import axios from 'axios';
 import { slugify, cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useEditor, EditorContent } from '@tiptap/react';
+import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
 import { TIPTAP_EXTENSIONS } from '@/lib/tiptap';
 import { Post } from '@prisma/client';
 import { 
@@ -103,11 +104,21 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: 'prose prose-invert max-w-none focus:outline-none min-h-[500px] selection:bg-gold/30 selection:text-white',
+        class: 'focus:outline-none min-h-[500px] selection:bg-gold/30 selection:text-white',
       },
     },
     onUpdate: ({ editor }) => {
-      // Logic for any real-time tracking can go here
+      // Logic for real-time tracking (Senior Sync)
+      // We trigger a state update for the preview to ensure "Live Parity"
+      const content = editor.getJSON();
+      const text = editor.getText();
+      
+      // Update the derived post state for the canvas
+      setPreviewData(prev => ({
+        ...prev,
+        content,
+        readingTime: Math.max(1, Math.ceil((text.split(' ').slice(0, 5000).length || 0) / 200))
+      }));
     }
   });
 
@@ -256,7 +267,13 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
     if (!editor) return null;
     return (
       <div 
-        className={cn("outline-none transition-all duration-300 relative min-h-[500px] py-4", 
+        className={cn(
+          "solitic-content transition-all duration-500 relative min-h-[500px] py-10", 
+          layoutType === 'editorial' && "editorial-body",
+          layoutType === 'magazine' && "magazine-body",
+          layoutType === 'minimal' && "minimal-body",
+          layoutType === 'report' && "report-body",
+          layoutType === 'spotlight' && "spotlight-body",
           selectedFont === 'inter' && "font-sans",
           selectedFont === 'playfair' && "font-display",
           selectedFont === 'poppins' && "font-poppins",
@@ -265,70 +282,48 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
         )}
         style={{ fontFamily: selectedFontFamily }}
       >
-        <div className="absolute inset-0 pointer-events-none z-[1000]">
-           {/* Production-Grade Custom Bubble Menu */}
-           <AnimatePresence>
-             {!editor.state.selection.empty && (
-               <motion.div
-                 initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                 exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                 className="pointer-events-auto absolute flex items-center gap-1 bg-[#121212]/95 backdrop-blur-3xl border border-white/10 p-1.5 rounded-xl shadow-2xl"
-                 style={{
-                    left: editor.view.coordsAtPos(editor.state.selection.from).left - (editor.view.dom.getBoundingClientRect().left || 0) + 20,
-                    top: editor.view.coordsAtPos(editor.state.selection.from).top - (editor.view.dom.getBoundingClientRect().top || 0) - 50,
-                 }}
-               >
-                <button onClick={() => editor.chain().focus().toggleBold().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('bold') ? "text-gold" : "text-white/60")}>
-                  <Bold className="w-4 h-4" />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleItalic().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('italic') ? "text-gold" : "text-white/60")}>
-                  <Italic className="w-4 h-4" />
-                </button>
-                <div className="w-px h-5 bg-white/10 mx-1" />
-                <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('heading', { level: 1 }) ? "text-gold" : "text-white/60")}>
-                  <Heading1 className="w-4 h-4" />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('heading', { level: 2 }) ? "text-gold" : "text-white/60")}>
-                  <Heading2 className="w-4 h-4" />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleBlockquote().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('blockquote') ? "text-gold" : "text-white/60")}>
-                  <Quote className="w-4 h-4" />
-                </button>
-               </motion.div>
-             )}
-           </AnimatePresence>
+        <BubbleMenu
+          editor={editor}
+          updateDelay={100}
+          className="flex items-center gap-1 bg-[#121212]/95 backdrop-blur-3xl border border-white/10 p-1.5 rounded-xl shadow-2xl"
+        >
+          <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('bold') ? "text-gold" : "text-white/60")}>
+            <Bold className="w-4 h-4" />
+          </button>
+          <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('italic') ? "text-gold" : "text-white/60")}>
+            <Italic className="w-4 h-4" />
+          </button>
+          <div className="w-px h-5 bg-white/10 mx-1" />
+          <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('heading', { level: 1 }) ? "text-gold" : "text-white/60")}>
+            <Heading1 className="w-4 h-4" />
+          </button>
+          <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('heading', { level: 2 }) ? "text-gold" : "text-white/60")}>
+            <Heading2 className="w-4 h-4" />
+          </button>
+          <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('blockquote') ? "text-gold" : "text-white/60")}>
+            <Quote className="w-4 h-4" />
+          </button>
+        </BubbleMenu>
 
-           {/* Production-Grade Custom Floating Menu */}
-           <AnimatePresence>
-             {editor.state.selection.empty && editor.state.doc.resolve(editor.state.selection.from).parent.content.size === 0 && (
-               <motion.div
-                 initial={{ opacity: 0, x: -10 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 exit={{ opacity: 0, x: -10 }}
-                 className="pointer-events-auto absolute flex items-center gap-1 bg-[#121212]/95 backdrop-blur-3xl border border-white/10 p-1.5 rounded-xl shadow-2xl"
-                 style={{
-                    left: editor.view.coordsAtPos(editor.state.selection.from).left - (editor.view.dom.getBoundingClientRect().left || 0) - 60,
-                    top: editor.view.coordsAtPos(editor.state.selection.from).top - (editor.view.dom.getBoundingClientRect().top || 0) - 5,
-                 }}
-               >
-                 <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('bulletList') ? "text-gold" : "text-white/60")}>
-                   <List className="w-4 h-4" />
-                 </button>
-                <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('orderedList') ? "text-gold" : "text-white/60")}>
-                  <ListOrdered className="w-4 h-4" />
-                </button>
-                <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('codeBlock') ? "text-gold" : "text-white/60")}>
-                  <Code className="w-4 h-4" />
-                </button>
-               </motion.div>
-             )}
-           </AnimatePresence>
-        </div>
+        <FloatingMenu
+          editor={editor}
+          updateDelay={100}
+          className="flex items-center gap-1 bg-[#121212]/95 backdrop-blur-3xl border border-white/10 p-1.5 rounded-xl shadow-2xl"
+        >
+          <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('bulletList') ? "text-gold" : "text-white/60")}>
+            <List className="w-4 h-4" />
+          </button>
+          <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('orderedList') ? "text-gold" : "text-white/60")}>
+            <ListOrdered className="w-4 h-4" />
+          </button>
+          <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={cn("p-2 rounded-lg hover:bg-white/10", editor.isActive('codeBlock') ? "text-gold" : "text-white/60")}>
+            <Code className="w-4 h-4" />
+          </button>
+        </FloatingMenu>
         <EditorContent editor={editor} />
       </div>
     );
-  }, [editor, selectedFont, selectedFontFamily]);
+  }, [editor, layoutType, selectedFont, selectedFontFamily]);
 
   const renderCanvas = () => {
     const props = { 
