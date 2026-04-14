@@ -3,11 +3,10 @@ const nextConfig = {
   poweredByHeader: false,
   compress: true,
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    // Quick Fix: Toggled to true to unblock the build pipeline during critical dependency upgrades.
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   images: {
     remotePatterns: [
