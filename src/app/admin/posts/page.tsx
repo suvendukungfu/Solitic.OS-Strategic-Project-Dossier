@@ -11,13 +11,14 @@ export default async function ManagePosts() {
   });
 
   const plainPosts = posts.map(post => {
-    const p = post as any;
+    // Explicitly cast to the expected structure for legacy post mapping
+    const p = post as unknown as (typeof post & { layoutType?: string; tags?: string | string[] });
     return {
       ...p,
       // Ensure layoutType exists even for legacy posts
       layoutType: p.layoutType || 'editorial',
       // Convert tags string to array if needed (handled in ManagePostsUI but good to be explicit)
-      tags: p.tags ? String(p.tags).split(',').filter(Boolean) : [],
+      tags: p.tags ? (typeof p.tags === 'string' ? p.tags.split(',').filter(Boolean) : p.tags) : [],
       status: (p.status || 'DRAFT') as PostStatus,
       // Ensure dates are strings for safe JSON serialization
       createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : p.createdAt,
