@@ -43,7 +43,7 @@ export default function PreviewPage() {
             Strategic Preview / Non-Persistent
          </div>
       </div>
-      <BlogPostUI post={draft} relatedPosts={[]} />
+      <BlogPostUI post={draft as any} relatedPosts={[]} />
     </div>
   );
 }
