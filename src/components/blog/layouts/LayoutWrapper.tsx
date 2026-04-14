@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { motion, useScroll, useSpring } from "framer-motion";
-import { Post } from "@prisma/client";
+import { BlogPost } from "../types";
 
 export function LayoutWrapper({ 
   children 
 }: { 
-  post: Post, 
+  post: BlogPost, 
   children: React.ReactNode 
 }) {
   const [mounted, setMounted] = useState(false);
