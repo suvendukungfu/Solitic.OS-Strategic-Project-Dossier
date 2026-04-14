@@ -1,21 +1,21 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { slugify, cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { useEditor, EditorContent, JSONContent } from '@tiptap/react';
+import { useEditor, EditorContent } from '@tiptap/react';
 import { TIPTAP_EXTENSIONS } from '@/lib/tiptap';
 import { Post } from '@prisma/client';
 import { 
-  ArrowLeft, Clock, Upload, Save, Rocket, Eye, Trash, 
-  Layout as LayoutIcon, Tag, Type, Palette, X, ChevronRight, Settings,
+  ArrowLeft, Upload, Save, Rocket, Trash, 
+  Layout as LayoutIcon, Tag, Type, Palette, Settings,
   Zap, Globe, Bold, Italic, List, ListOrdered, Code, Quote, Heading1, Heading2 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EditorToolbar } from './Toolbar';
-import StarterKit from '@tiptap/starter-kit';
+
 import Placeholder from '@tiptap/extension-placeholder';
 
 // Import Layouts directly for the Canvas
@@ -70,10 +70,10 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
   const [postId, setPostId] = useState<string | null>(initialData?.id ?? null);
   const [title, setTitle] = useState(initialData?.title || '');
   const [category, setCategory] = useState(initialData?.category || 'Strategy');
-  const [slug, setSlug] = useState(initialData?.slug || '');
+  const [slug] = useState(initialData?.slug || '');
   const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">(initialData?.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT");
   const [coverImage, setCoverImage] = useState(initialData?.coverImage || '');
-  const [tags, setTags] = useState(initialData?.tags || '');
+  const [tags] = useState(initialData?.tags || '');
   const [layoutType, setLayoutType] = useState<string>((initialData as BlogPost)?.layoutType || 'editorial');
   const [author, setAuthor] = useState(initialData?.author || 'Principal Counsel');
   const [selectedFont, setSelectedFont] = useState(initialData?.fonts || 'inter');
@@ -103,7 +103,7 @@ export default function BlogEditor({ initialData }: { initialData?: Post }) {
         class: 'prose prose-invert max-w-none focus:outline-none min-h-[500px] selection:bg-gold/20 selection:text-gold selection:shadow-[0_0_15px_rgba(194,164,109,0.3)]',
       },
     },
-    onUpdate: ({ editor }) => {
+    onUpdate: () => {
       // Logic for debounced auto-save can be added here
     }
   });
