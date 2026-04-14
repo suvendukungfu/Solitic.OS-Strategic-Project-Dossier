@@ -42,15 +42,13 @@ export const Color = Extension.create({
   addCommands() {
     return {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setColor: (color: string) => ({ chain }: any) => {
+      setColor: (color: string) => ({ chain }: { chain: () => any }) => {
         return chain().setMark('textStyle', { color }).run();
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      unsetColor: () => ({ chain }: any) => {
+      unsetColor: () => ({ chain }: { chain: () => any }) => {
         return chain().setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
+    };
   },
 });
 
@@ -81,15 +79,13 @@ export const FontSize = Extension.create({
   addCommands() {
     return {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setFontSize: (fontSize: string) => ({ chain }: any) => {
+      setFontSize: (fontSize: string) => ({ chain }: { chain: () => any }) => {
         return chain().setMark('textStyle', { fontSize }).run();
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      unsetFontSize: () => ({ chain }: any) => {
+      unsetFontSize: () => ({ chain }: { chain: () => any }) => {
         return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any;
+    };
   },
 });
 

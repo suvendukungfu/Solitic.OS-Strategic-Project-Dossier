@@ -82,7 +82,7 @@ export async function PUT(
       title: updateData.title,
       slug: slug || updateData.slug,
       content: (updateData.content || {}) as Prisma.InputJsonValue,
-      excerpt: (updateData.excerpt ? JSON.stringify(updateData.excerpt) : null) as any,
+      excerpt: (updateData.excerpt ? JSON.stringify(updateData.excerpt) : null) as Prisma.InputJsonValue | null,
       category: updateData.category || "General",
       readingTime,
       tags: updateData.tags || '',
