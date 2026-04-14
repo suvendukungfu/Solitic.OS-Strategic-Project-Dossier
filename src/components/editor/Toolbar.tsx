@@ -64,7 +64,7 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
           onChange={(e) => {
             if (!e.target.value) return;
             // Cast to unknown first to safely call custom extension methods
-            (editor.chain().focus() as unknown as { setFontSize: (size: string) => any }).setFontSize(e.target.value).run();
+            (editor.chain().focus() as unknown as { setFontSize: (size: string) => void }).setFontSize(e.target.value).run();
             // Force focus back to editor after a micro-task
             setTimeout(() => editor.commands.focus(), 10);
           }}
@@ -96,7 +96,7 @@ export function EditorToolbar({ editor, className }: EditorToolbarProps) {
           onChange={(e) => {
             if (!e.target.value) return;
             // Cast to unknown first to safely call custom extension methods
-            (editor.chain().focus() as unknown as { setColor: (color: string) => any }).setColor(e.target.value).run();
+            (editor.chain().focus() as unknown as { setColor: (color: string) => void }).setColor(e.target.value).run();
             setTimeout(() => editor.commands.focus(), 10);
           }}
           className="bg-white/5 text-[10px] font-black uppercase tracking-widest text-white/60 px-2 py-1.5 rounded-lg focus:outline-none cursor-pointer hover:bg-white/10"
