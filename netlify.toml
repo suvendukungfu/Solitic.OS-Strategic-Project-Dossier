@@ -1,9 +1,10 @@
 [build]
-  command = "npx prisma generate && next build"
+  command = "bun run build"
   publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
+  BUN_VERSION = "1.1.0"
   PRISMA_GENERATE_DATAPROXY = "true"
 
 [[plugins]]
