@@ -5,7 +5,7 @@
 [build.environment]
   NODE_VERSION = "20"
   BUN_VERSION = "1.1.0"
-  PRISMA_GENERATE_DATAPROXY = "true"
+  PRISMA_CLIENT_ENGINE = "library"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
