@@ -1,7 +1,14 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaNeon } from '@prisma/adapter-neon';
+import { Pool } from '@neondatabase/serverless';
+import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 
-const prisma = new PrismaClient();
+dotenv.config();
+
+const neonPool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaNeon(neonPool);
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
   const adminEmail = process.env.ADMIN_EMAIL || 'admin@goldendynasty.com';
