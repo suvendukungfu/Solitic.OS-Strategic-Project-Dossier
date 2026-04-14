@@ -57,11 +57,22 @@ const virtualPrisma = {
   }
 };
 
+import { env } from "./env";
+
+// ... (interface definitions)
+
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  return new PrismaClient({
+    datasources: {
+      db: {
+        url: env.DATABASE_URL,
+      },
+    },
+  });
 };
 
 declare global {
+  // eslint-disable-next-line no-var
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
