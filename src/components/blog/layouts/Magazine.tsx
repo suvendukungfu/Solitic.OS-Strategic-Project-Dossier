@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { renderContent } from "@/lib/tiptap";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { LayoutProps } from "../types";
@@ -42,7 +41,7 @@ export default function MagazineLayout({ post, relatedPosts, contentOverride }: 
           >
             <img 
               src={post.coverImage} 
-              className="w-full h-full object-cover opacity-60 grayscale-[0.5] hover:grayscale-0 transition-all duration-[3s]" 
+              className="w-full h-full object-cover opacity-60 grayscale-[0.5] hover:grayscale-0 transition-all duration-[3000ms]" 
               alt={String(post.title)} 
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#080808]/40 to-transparent" />

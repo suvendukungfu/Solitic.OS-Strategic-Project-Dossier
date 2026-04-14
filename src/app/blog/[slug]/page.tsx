@@ -9,7 +9,6 @@ import { MOCKUP_POSTS } from "@/lib/blog-data";
 import { renderPlainText } from "@/lib/tiptap";
 import { BlogPost } from "@/components/blog/types";
 
-import { Post } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 

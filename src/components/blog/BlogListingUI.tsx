@@ -168,12 +168,12 @@ export function BlogListingUI({ posts: initialPosts }: { posts: BlogPost[] }) {
                     </p>
                   </header>
 
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[2.5rem] bg-white/5 border border-white/10 group-hover:border-gold/30 shadow-4xl group-hover:shadow-gold/10 transition-all duration-[1s]">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[2.5rem] bg-white/5 border border-white/10 group-hover:border-gold/30 shadow-4xl group-hover:shadow-gold/10 transition-all duration-[1000ms]">
                     {featuredPost.coverImage && (
                       <img 
                         src={featuredPost.coverImage} 
                         alt={String(featuredPost.title)}
-                        className="w-full h-full object-contain p-8 grayscale group-hover:grayscale-0 transition-all duration-[2s] group-hover:scale-105"
+                        className="w-full h-full object-contain p-8 grayscale group-hover:grayscale-0 transition-all duration-[2000ms] group-hover:scale-105"
                       />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
