@@ -1,3 +1,5 @@
+import { JSONContent } from '@tiptap/react';
+
 export type PostStatus = 'DRAFT' | 'PUBLISHED';
 
 export interface Post {
@@ -7,8 +9,7 @@ export interface Post {
   category: string;
   author: string;
   excerpt?: string | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  content: any; // TipTap JSON
+  content: JSONContent | string; // Correctly typed TipTap JSON content
   tags: string[];
   coverImage?: string | null;
   readingTime: number;

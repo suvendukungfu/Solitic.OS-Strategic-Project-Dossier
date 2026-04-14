@@ -41,12 +41,11 @@ export const Color = Extension.create({
   },
   addCommands() {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setColor: (color: string) => ({ chain }: { chain: () => any }) => {
-        return chain().setMark('textStyle', { color }).run();
+      setColor: (color: string) => ({ chain }: { chain: () => unknown }) => {
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { run: () => void } }).setMark('textStyle', { color }).run();
       },
-      unsetColor: () => ({ chain }: { chain: () => any }) => {
-        return chain().setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
+      unsetColor: () => ({ chain }: { chain: () => unknown }) => {
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { removeEmptyTextStyle: () => { run: () => void } } }).setMark('textStyle', { color: null }).removeEmptyTextStyle().run();
       },
     };
   },
@@ -78,12 +77,11 @@ export const FontSize = Extension.create({
   },
   addCommands() {
     return {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setFontSize: (fontSize: string) => ({ chain }: { chain: () => any }) => {
-        return chain().setMark('textStyle', { fontSize }).run();
+      setFontSize: (fontSize: string) => ({ chain }: { chain: () => unknown }) => {
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { run: () => void } }).setMark('textStyle', { fontSize }).run();
       },
-      unsetFontSize: () => ({ chain }: { chain: () => any }) => {
-        return chain().setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
+      unsetFontSize: () => ({ chain }: { chain: () => unknown }) => {
+        return (chain() as unknown as { setMark: (n: string, a: unknown) => { removeEmptyTextStyle: () => { run: () => void } } }).setMark('textStyle', { fontSize: null }).removeEmptyTextStyle().run();
       },
     };
   },

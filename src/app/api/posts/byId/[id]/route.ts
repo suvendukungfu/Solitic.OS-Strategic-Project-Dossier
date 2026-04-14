@@ -12,7 +12,7 @@ function isAuthorized(role?: string) {
 }
 
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
@@ -82,7 +82,7 @@ export async function PUT(
       title: updateData.title,
       slug: slug || updateData.slug,
       content: (updateData.content || {}) as Prisma.InputJsonValue,
-      excerpt: (updateData.excerpt ? JSON.stringify(updateData.excerpt) : null) as Prisma.InputJsonValue | null,
+      excerpt: (updateData.excerpt ? JSON.stringify(updateData.excerpt) : null) as string | null,
       category: updateData.category || "General",
       readingTime,
       tags: updateData.tags || '',
@@ -113,7 +113,7 @@ export async function PUT(
     
     return NextResponse.json(transformedPost);
   } catch (error) {
-    console.error(`PUT /api/posts/byId/${resolvedParams.id} - FATAL ERROR:`, error);
+    console.error(`PUT /api/posts/byId - FATAL ERROR:`, error);
     return NextResponse.json({ message: "Manuscript synchronization failed" }, { status: 400 });
   }
 }
@@ -167,7 +167,7 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
